@@ -1,0 +1,280 @@
+\documentclass[letter, 10pt]{article}
+\usepackage[latin1]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage[dvips]{graphicx}
+\usepackage{url}
+\usepackage[top=3cm,bottom=3cm,left=3.5cm,right=3.5cm,footskip=1.5cm,headheight=1.5cm,headsep=.5cm,textheight=3cm]{geometry}
+
+
+
+\begin{document}
+\title{Inteligencia Artificial \\ \begin{Large}Estado del Arte: Problema Generación Procedural de Plataformas\end{Large}}
+\author{Bruno Morici}
+\date{\today}
+\maketitle
+
+
+%--------------------No borrar esta secci\'on--------------------------------%
+\section*{Evaluaci\'on}
+
+\begin{tabular}{ll}
+Resumen (5\%): & \underline{\hspace{2cm}} \\
+Introducci\'on (5\%):  & \underline{\hspace{2cm}} \\
+Definici\'on del Problema (10\%):  & \underline{\hspace{2cm}} \\
+Estado del Arte (40\%):  & \underline{\hspace{2cm}} \\
+Modelo Matem\'atico (20\%): &  \underline{\hspace{2cm}}\\
+Conclusiones (15\%): &  \underline{\hspace{2cm}}\\
+Bibliograf\'ia (5\%): & \underline{\hspace{2cm}}\\
+ &  \\
+\textbf{Nota Final (100\%)}:   & \underline{\hspace{2cm}}
+\end{tabular}
+%---------------------------------------------------------------------------%
+\vspace{2cm}
+
+
+\begin{abstract}
+En el presente documento se estudia la generación procedural para videojuegos de plataformas en dos dimensiones, un caso particular de la generación procedural de contenido (PCG). El problema consiste en determinar automáticamente la disposición de los elementos de un nivel, de forma que el resultado pueda ser completado según las capacidades físicas del ávatar y, a la vez, se ajuste a los parámetros definidos por el diseñador del nivel (dificultad, estilo, ritmo). Luego se revisa el estado del arte, considerando diferentes enfoques, y se comparan sus representaciones, resultados y limitaciones. Finalmente se propone un modelo matemático que formula el problema como un problema de satisfacción de restricciones con optimización (CSOP), definiendo sus variables, restricciones y función objetivo.
+\end{abstract}
+
+\section{Introducci\'on}
+La generación procedural de contenido (PCG) corresponde a la creación automática de contenido para videojuegos mediante algoritmos \cite{Maleki2024Survey}. En los videojuegos de plataformas en dos dimensiones, como Super Mario Bros, Donkey Kong o Geometry Dash, generar un nivel implica decidir la disposición del suelo, plataformas, enemigos, huecos, obstáculos y recompensas de modo que el jugador pueda recorrerlo desde el inicio hasta la meta con caminos factibles.\\
+
+La industria de los videojuegos superó en 2022 los ingresos de la música y el cine, siempre necesita contenido nuevo \cite{Maleki2024Survey}, sin embargo, la generación de contenido representa un costo significativo en la producción de los videojuegos, impactando su presupuesto y tiempo de desarrollo. La PCG permite reducir este esfuerzo y aumentar la rejugabilidad, minimizando el esfuerzo para los desarrolladores y diseñadores de niveles.\\
+
+El propósito de este documento es analizar el estado del arte de la PCG en niveles de plataformas 2D, comparando enfoques constructivos, basados en búsqueda, basados en restricciones y de aprendizaje automático. Como contribución, se presenta una formulación matemática del problema como un problema de satisfacción de restricciones con optimización (CSOP), basada en el modelo de restricciones propuesto por Cooper~\cite{Cooper2022Sturgeon}, integrando la jugabilidad como restricción y los criterios del diseñador como función objetivo.\\
+
+El documento se organiza de la siguiente forma. La Sección 2 define el problema, sus variables, restricciones, objetivos y variantes. La Sección 3 presenta el estado del arte, describiendo los principales enfoques, las representaciones utilizadas y algoritmos utilizados. La Sección 4 propone el modelo matemático. La Sección 5 expone las conclusiones, y finalmente se presenta la bibliografía junto con el detalle del uso de LLMs.
+
+\section{Definici\'on del Problema}
+Para describir el problema de generación procedural de contenido enfocado en niveles de videojuegos de plataformas en dos dimensiones, se utiliza como referencia el caso de \textit{Super Mario Bros.} (Nintendo, 1985). El problema que surge en este tipo de videojuegos es cómo colocar las diferentes plataformas, obstáculos, enemigos, monedas y resortes dentro de un nivel, de modo que el resultado se acerque lo más posible a los parámetros entregados por el diseñador del nivel y que, a su vez, el nivel sea jugable, es decir, que pueda completarse desde el inicio hasta la meta. En estos videojuegos se definen ciertos elementos relevantes para el problema~\cite{Smith2011Launchpad}:
+\begin{itemize}
+	\item \textbf{Avatar:} personaje controlado por el jugador. Sus capacidades de movimiento (caminar, correr y saltar) determinan qué partes del nivel son alcanzables.
+	\item \textbf{Plataformas:} superficies sobre las cuales el avatar puede desplazarse de forma segura.
+	\item \textbf{Obstáculos:} cualquier elemento que dañe al avatar o interrumpa el flujo del juego. Los \textbf{enemigos}, que el jugador debe eliminar o evitar, y los \textbf{huecos}, espacios sin suelo cuya caída implica perder una vida, son tipos de obstáculo.
+	\item \textbf{Ayudas de movimiento:} elementos como los resortes, que modifican temporalmente la velocidad o dirección del avatar.
+	\item \textbf{Recompensas:} elementos como las monedas, que premian al jugador y a la vez lo guían a lo largo del nivel.
+\end{itemize}
+
+Un nivel jugable constituye una solución de este problema. Muchas de las soluciones algorítmicas existentes dividen el problema en dos partes: la creación de escenas y la agrupación de escenas~\cite{Smith2011Launchpad,Green2020SceneStitching,Mawhorter2010ORE}. La creación de escenas consiste en construir segmentos cortos de un nivel, cada uno con un inicio y un fin, que deben poder anexarse entre sí; estas escenas pueden ser creadas a mano por los diseñadores~\cite{Mawhorter2010ORE} o mediante un algoritmo, por ejemplo, uno basado en el ritmo de acciones del jugador~\cite{Smith2011Launchpad}. La agrupación de escenas, por su parte, es el procedimiento mediante el cual se anexan las escenas previamente creadas para formar un nivel completo. No obstante, también existen enfoques que generan el nivel completo casilla por casilla~\cite{Cooper2022Sturgeon} o que ajustan los parámetros globales de un generador~\cite{Shaker2010Personalized}.\\
+
+Independientemente del enfoque, surgen dos preguntas: qué se entiende por un nivel de calidad y cómo garantizan los algoritmos que el nivel resultante la tenga. Para responderlas, a continuación se detallan las dificultades, variables, restricciones, objetivo y variantes del problema.
+
+\subsection{Dificultades}
+La principal dificultad para la resolución de este problema surge de que la cantidad de niveles posibles crece exponencialmente con el tamaño del nivel y con el número de tipos de elementos, por lo que no es factible revisarlos todos. A esto se suman otras dificultades:
+\begin{itemize}
+	\item \textbf{La jugabilidad es una condición global:} no basta con que cada elemento sea compatible con sus vecinos; es necesario verificar que exista un camino completo desde el inicio hasta la meta~\cite{Karth2017WFC}, lo que suele requerir simular el movimiento del avatar o hacer que un agente juegue el nivel~\cite{Green2020SceneStitching}.
+	\item \textbf{La calidad es difícil de medir:} conceptos como la diversión o el desafío son subjetivos, y los modelos que intentan predecirlos tienen una precisión limitada~\cite{Shaker2010Personalized}.
+	\item \textbf{Equilibrio entre variedad y control:} otorgar mayor libertad al generador produce niveles más variados, pero aumenta el riesgo de obtener niveles injugables~\cite{Mawhorter2010ORE}.
+\end{itemize}
+
+\subsection{Variables}
+Las variables del problema corresponden a las decisiones que debe tomar el generador:
+\begin{itemize}
+	\item Qué elemento (suelo, aire, enemigo, moneda, resorte, entre otros) ocupa cada casilla del nivel, en los enfoques que lo representan como una grilla~\cite{Cooper2022Sturgeon}.
+	\item Qué escenas se seleccionan y en qué orden se anexan, en los enfoques basados en escenas~\cite{Green2020SceneStitching,Mawhorter2010ORE}.
+\end{itemize}
+Estas decisiones dependen de parámetros que no cambian durante la generación:
+\begin{itemize}
+	\item Las dimensiones del nivel (alto y ancho).
+	\item Las capacidades físicas del avatar, como la altura y la distancia máxima de salto~\cite{Smith2011Launchpad}.
+	\item Las preferencias del diseñador, como la cantidad o frecuencia deseada de cada elemento, la dificultad o la trayectoria general del nivel~\cite{Smith2011Launchpad}.
+\end{itemize}
+
+\subsection{Restricciones}
+Para que un nivel sea válido, debe cumplir las siguientes restricciones~\cite{Cooper2022Sturgeon}:
+\begin{itemize}
+	\item Cada casilla contiene exactamente un elemento.
+	\item El nivel tiene exactamente un inicio y una meta.
+	\item Los enemigos y obstáculos se ubican sobre una plataforma o sobre el suelo.
+	\item Los elementos vecinos forman combinaciones válidas, similares a las de niveles de ejemplo; por ejemplo, una tubería no puede quedar incompleta.
+	\item La separación y la diferencia de altura entre plataformas respetan las capacidades de salto del avatar~\cite{Smith2011Launchpad}.
+	\item \textbf{Jugabilidad:} debe existir un camino desde el inicio hasta la meta que el avatar pueda recorrer caminando, cayendo o saltando.
+\end{itemize}
+Los algoritmos difieren en cómo tratan estas restricciones: algunos las garantizan por construcción~\cite{Smith2011Launchpad}, otros las verifican posteriormente mediante agentes que juegan el nivel~\cite{Green2020SceneStitching} y otros no garantizan la jugabilidad~\cite{Mawhorter2010ORE}.
+
+\subsection{Objetivo}
+El objetivo es obtener un nivel jugable en el que la cantidad de cada tipo de elemento sea lo más cercana posible a la que pidió el diseñador, es decir, minimizar la diferencia entre la cantidad solicitada y la cantidad colocada de cada elemento~\cite{Cooper2022Sturgeon,Smith2011Launchpad}.
+
+\subsection{Variantes}
+Entre las variantes más conocidas del problema está la generación personalizada, donde el nivel se adapta al jugador mientras juega~\cite{Shaker2010Personalized}; la generación a partir de un nivel de referencia, que busca repetir su secuencia de mecánicas con un nivel distinto~\cite{Green2020SceneStitching}; la generación basada en ritmo~\cite{Smith2011Launchpad}; el ensamblaje de piezas hechas a mano~\cite{Mawhorter2010ORE}; y la reparación o unión de niveles ya existentes~\cite{Cooper2022Sturgeon}. También existen variantes con otros tipos de movimiento, como juegos sin salto estándar~\cite{Cooper2022Sturgeon}, y la generación de niveles en 3D, que todavía está poco estudiada~\cite{Maleki2024Survey}.
+
+\section{Estado del Arte}
+\subsection{Origen del problema}
+La PCG se usa en videojuegos desde fines de los años 70, sobre todo en juegos \textit{roguelike} como \textit{Beneath Apple Manor} (1978) y \textit{Rogue} (1980), que generaban mazmorras distintas en cada partida~\cite{Maleki2024Survey}. En los juegos de plataformas, en cambio, los intentos de generar niveles completos fueron pocos hasta mediados de los 2000~\cite{Shaker2010Personalized}. Juegos como \textit{Spelunky} usaron piezas prediseñadas ubicadas en una grilla, lo que funciona porque el jugador puede modificar el nivel con bombas o cuerdas, pero no sirve para niveles lineales como los de \textit{Super Mario Bros.}~\cite{Smith2011Launchpad}. Más adelante, con \textit{Infinite Mario Bros}, un clon libre de \textit{Super Mario Bros.}, y las competencias \textit{Mario AI} desde 2009, este juego pasó a ser el entorno de prueba más usado para estudiar el problema~\cite{Shaker2010Personalized,Green2020SceneStitching}.
+
+\subsection{Launchpad: generación de escenas basada en ritmo}
+Smith et al.~\cite{Smith2011Launchpad} proponen Launchpad, un generador basado en un modelo del diseño de niveles de plataformas. Su principal avance es que no une trozos de nivel hechos a mano, sino que construye las escenas a partir de los componentes básicos (plataformas, huecos, enemigos y resortes), por lo que casi no requiere trabajo manual.
+
+Cada escena es un \textit{grupo de ritmo}, un tramo corto del nivel con un desafío. Primero se genera el ritmo, que es la secuencia de acciones del jugador en el tiempo (moverse o saltar), con un tipo, una densidad y una duración de entre 5 y 20 segundos. Después, una gramática convierte cada acción en geometría; por ejemplo, un salto puede transformarse en un hueco, un enemigo o un resorte. La jugabilidad se asegura por construcción: un modelo físico del avatar indica cuánto tiempo pasa en el aire con cada tipo de salto, y si una geometría no le permite aterrizar antes de la siguiente acción del ritmo, esa opción se descarta.
+
+Las escenas se unen con plataformas de descanso, que son planas y no tienen desafíos, por lo que el nivel completo sigue siendo jugable. Al final se agrega un suelo común y se reparten monedas por el nivel. Como el algoritmo puede generar muchos niveles distintos, Launchpad aplica la técnica de \textit{generar y probar}: crea muchos candidatos y elige el mejor según qué tan cerca está de una trayectoria definida por el diseñador y de la frecuencia de componentes que este pidió. Como limitaciones, solo genera niveles de un único camino y su modelo físico no considera mecánicas como el doble salto.
+
+\subsection{Scene Stitching: unión de escenas mediante búsqueda evolutiva}
+Green et al.~\cite{Green2020SceneStitching} no generan escenas, sino que resuelven cómo unirlas. Usan un conjunto de 1691 escenas de \textit{Super Mario Bros.} creadas previamente, cada una marcada con las mecánicas que el jugador debe usar para pasarla. A partir de la secuencia de mecánicas que un agente usa al jugar un nivel original, buscan una secuencia de escenas que entregue una experiencia parecida, pero con un nivel distinto.
+
+La búsqueda se hace con FI-2Pop, un algoritmo genético con dos poblaciones: una de niveles infactibles, que evoluciona para cumplir la jugabilidad, y otra de niveles factibles, que evoluciona para acercarse a la secuencia de mecánicas buscada. Cada individuo es una lista de escenas de largo variable, que se modifica con cruce de dos puntos y con mutaciones que agregan, quitan, dividen, juntan o cambian escenas. Aquí la jugabilidad no se asegura por construcción, sino que se revisa después con un agente externo: un agente A* juega cada nivel varias veces y, si gana en suficientes partidas, el nivel se considera jugable; si no, se mide cuánto alcanzó a avanzar. Con este método, entre un 87,25\,\% y un 100\,\% de los niveles resultaron completables, contra un 25--28,5\,\% de un método voraz. Como limitaciones, los niveles quedan más planos y menos variados que los originales, y jugar cada nivel con el agente es costoso.
+
+\subsection{Otros enfoques}
+Mawhorter y Mateas~\cite{Mawhorter2010ORE} arman niveles uniendo piezas hechas a mano a partir de anclas, que son posiciones que el jugador puede ocupar; el método da niveles variados, pero no asegura que sean jugables. Shaker et al.~\cite{Shaker2010Personalized} adaptan los niveles a cada jugador: con datos de 327 jugadores entrenan redes neuronales que predicen la diversión según cuatro parámetros del nivel y el estilo del jugador, y luego eligen los parámetros que dan más diversión. En sus pruebas, el 60\,\% de los participantes prefirió el nivel adaptado, aunque la jugabilidad no se modela.
+
+Por último, Cooper~\cite{Cooper2022Sturgeon} propone Sturgeon, que plantea la generación como un problema de restricciones sobre variables booleanas y lo resuelve con \textit{solvers} como SAT o ASP. El nivel se arma casilla por casilla usando patrones aprendidos de un nivel de ejemplo y una restricción de alcanzabilidad que exige un camino desde el inicio hasta la meta. En \textit{Super Mario Bros.} genera niveles jugables en segundos y también permite reparar o completar niveles. Este enfoque se parece a \textit{WaveFunctionCollapse} (WFC), que según Karth y Smith~\cite{Karth2017WFC} también resuelve restricciones, pero solo entre casillas vecinas, por lo que no asegura que exista un camino completo por el nivel.
+
+\subsection{Clasificación de los algoritmos}
+Maleki y Zhao~\cite{Maleki2024Survey} revisan 207 artículos publicados entre 2019 y 2023 y separan los algoritmos de PCG en cinco grupos: (1) métodos de búsqueda, que ven el problema como uno de optimización, como los algoritmos evolutivos usados en Scene Stitching; (2) aprendizaje automático, que aprende de niveles existentes para generar otros parecidos, como las redes neuronales o el aprendizaje por refuerzo; (3) otros métodos constructivos, como el ruido o las gramáticas, grupo en el que entra Launchpad; (4) modelos de lenguaje (LLM), como MarioGPT, que genera niveles de Mario a partir de texto; y (5) métodos combinados, que mezclan los anteriores, por ejemplo, para reparar niveles. En este documento se agrega un sexto grupo, el de los métodos basados en restricciones, como Sturgeon~\cite{Cooper2022Sturgeon} y WFC~\cite{Karth2017WFC}, ya que son los únicos que tratan la jugabilidad como una restricción explícita.
+
+\subsection{Representaciones y resultados}
+La Tabla~\ref{tab:comparacion} resume los enfoques revisados según su representación del nivel y cómo tratan la jugabilidad.
+
+\begin{table}[h]
+	\centering
+	\footnotesize
+	\begin{tabular}{p{2.1cm}p{2.3cm}p{2.3cm}p{2.4cm}p{2.3cm}}
+		\hline
+		\textbf{Trabajo} & \textbf{Enfoque} & \textbf{Representación} & \textbf{Jugabilidad} & \textbf{Objetivo} \\
+		\hline
+		Smith et al.~\cite{Smith2011Launchpad} & Gramática con generar y probar & Ritmo y geometría & Garantizada por construcción & Críticos del diseñador \\
+		\hline
+		Mawhorter y Mateas~\cite{Mawhorter2010ORE} & Ensamblaje de piezas & Piezas con anclas & No garantizada & Variedad \\
+		\hline
+		Shaker et al.~\cite{Shaker2010Personalized} & Modelo del jugador y búsqueda exhaustiva & Vector de 4 parámetros & No modelada & Maximizar la diversión predicha \\
+		\hline
+		Green et al.~\cite{Green2020SceneStitching} & Evolutivo (FI-2Pop) & Secuencia de escenas & Verificada con agente A* & Similitud de mecánicas \\
+		\hline
+		Cooper~\cite{Cooper2022Sturgeon} & Satisfacción de restricciones & Grilla de tiles & Garantizada como restricción & Distribución de tiles \\
+		\hline
+	\end{tabular}
+	\caption{Comparación de enfoques para la generación de niveles de plataformas 2D.}
+	\label{tab:comparacion}
+\end{table}
+
+Cada representación tiene ventajas distintas. El ritmo con geometría asegura la jugabilidad de forma directa, pero solo permite niveles de un camino~\cite{Smith2011Launchpad}. Las escenas o piezas reducen la búsqueda, pero dependen de una biblioteca previa que limita la variedad~\cite{Mawhorter2010ORE,Green2020SceneStitching}. El vector de parámetros es simple y rápido, pero solo controla aspectos generales del nivel~\cite{Shaker2010Personalized}. La grilla de tiles es la más flexible y permite escribir la jugabilidad como una restricción, aunque su espacio de búsqueda es mucho mayor~\cite{Cooper2022Sturgeon}; por eso es la que se usa en el modelo de este documento. Como cada trabajo se evalúa con métricas y juegos distintos, no hay una forma común de decir qué algoritmo es mejor.
+
+\subsection{Tendencia actual}
+La generación de niveles es el tema más estudiado de la PCG, con 102 de los 207 artículos revisados, y \textit{Super Mario Bros.} es el juego más usado~\cite{Maleki2024Survey}. Entre 2019 y 2023 los métodos más usados fueron los clásicos, como el ruido y las gramáticas, seguidos por el aprendizaje automático, mientras que los LLM pasaron de uno o dos artículos al año a 13 en 2023~\cite{Maleki2024Survey}. La investigación apunta a combinar métodos, a reparar niveles en vez de generarlos desde cero y a la generación en 3D~\cite{Maleki2024Survey}.
+
+
+\section{Modelo Matem\'atico}
+
+El modelo presentado a continuación corresponde a una adaptación del sistema Sturgeon~\cite{Cooper2022Sturgeon}, cuyas restricciones se describen originalmente mediante una interfaz de programación y aquí se expresan en notación matemática, aplicadas al caso de \textit{Super Mario Bros.} La función objetivo es una adaptación propia, inspirada en las reglas de distribución de Sturgeon y en el crítico de frecuencia de componentes de Launchpad~\cite{Smith2011Launchpad}. El problema se formula como un \textbf{problema de satisfacción de restricciones con optimización (CSOP)}: las restricciones definen qué niveles son válidos y la función objetivo selecciona, entre ellos, el que mejor se ajusta a lo solicitado por el diseñador.
+
+\subsection{Conjuntos y parámetros}
+
+\begin{itemize}
+	\item $I = \{1, \dots, H\}$: filas del nivel, donde la fila 1 es la superior. En \textit{Super Mario Bros.}, $H = 14$.
+	\item $J = \{1, \dots, W\}$: columnas del nivel, de izquierda a derecha.
+	\item $T$: tipos de tile. Para Mario se considera $T = \{$aire, sólido, tubería, enemigo, moneda, inicio, meta$\}$.
+	\item $T_c = \{\text{sólido}, \text{tubería}\} \subset T$: tiles \textbf{cerrados}, que el avatar no puede atravesar y sobre los cuales puede pararse. El resto, $T_a = T \setminus T_c$, son tiles \textbf{abiertos}.
+	\item $\Pi$: conjunto de patrones permitidos, formado por todas las secuencias de tres columnas consecutivas observadas en un nivel de ejemplo (por ejemplo, el nivel 1-1 de \textit{Super Mario Bros.}), equivalente a la plantilla \textit{3gr-col} de Cooper.
+	\item $G = (V, E)$: grafo de movimiento. Cada nodo $u \in V$ es una casilla $(i,j)$ y cada arista $e = (u,v) \in E$ representa un movimiento potencial del avatar (caminar, caer o saltar), definido según su altura máxima de salto $h_s$ y su distancia máxima de salto $d_s$. Cada arista tiene asociados dos conjuntos de casillas: $A(e)$, que deben estar abiertas (por ejemplo, las del arco de un salto), y $B(e)$, que deben estar cerradas (por ejemplo, la casilla bajo el punto de partida).
+	\item $\mathrm{in}(v)$ y $\mathrm{out}(v)$: aristas que llegan a la casilla $v$ y que salen de ella.
+	\item $k$: ancho, en columnas, de las zonas válidas para el inicio y la meta.
+	\item $n_t$: cantidad de tiles de tipo $t$ solicitada por el diseñador, para cada $t \in T_d \subseteq T$, donde $T_d$ es el conjunto de tipos controlados (por ejemplo, enemigos, monedas y tuberías).
+	\item $w_t \geq 0$: importancia relativa de cumplir la cantidad solicitada del tipo $t$.
+\end{itemize}
+
+\subsection{Variables y dominios}
+
+\begin{itemize}
+	\item $x_{i,j,t} \in \{0,1\}$: vale 1 si la casilla $(i,j)$ contiene un tile de tipo $t$, y 0 en caso contrario. Es la variable principal del modelo. De forma equivalente, puede definirse una variable categórica $X_{i,j} \in T$ que indica el tipo de tile de cada casilla, donde $X_{i,j} = t \Leftrightarrow x_{i,j,t} = 1$.
+	\item $a_u \in \{0,1\}$: vale 1 si la casilla $u$ está abierta, es decir, si contiene un tile de $T_a$.
+	\item $r_u \in \{0,1\}$: vale 1 si la casilla $u$ forma parte del camino recorrido desde el inicio hasta la meta.
+	\item $z_e \in \{0,1\}$: vale 1 si el movimiento representado por la arista $e$ se utiliza en ese camino.
+	\item $\delta_t \in \mathbb{R}_{\geq 0}$: diferencia, en valor absoluto, entre la cantidad de tiles de tipo $t$ colocada y la solicitada, para cada $t \in T_d$.
+\end{itemize}
+
+\subsection{Espacio de búsqueda}
+
+Como cada casilla puede contener cualquiera de los $|T|$ tipos de tile, el número de niveles posibles es $|T|^{H \cdot W}$, antes de aplicar las restricciones. Las variables $a$, $r$, $z$ y $\delta$ quedan determinadas, o acotadas, por la elección de $x$. Para un nivel de 14 filas y 60 columnas con los 7 tipos de tile definidos, el espacio contiene $7^{840} \approx 10^{710}$ niveles posibles, lo que impide una búsqueda exhaustiva y justifica el uso de propagación de restricciones y \textit{solvers} especializados.
+
+\subsection{Función objetivo}
+
+\begin{equation}
+	\min \; Z = \sum_{t \in T_d} w_t \, \delta_t
+	\label{eq:objetivo}
+\end{equation}
+
+donde $\delta_t$ se relaciona con la cantidad colocada mediante las siguientes restricciones, que linealizan el valor absoluto:
+\begin{align}
+	\delta_t &\geq \sum_{i \in I}\sum_{j \in J} x_{i,j,t} - n_t && \forall t \in T_d \label{eq:delta1}\\
+	\delta_t &\geq n_t - \sum_{i \in I}\sum_{j \in J} x_{i,j,t} && \forall t \in T_d \label{eq:delta2}
+\end{align}
+
+En palabras, se busca minimizar la suma ponderada de las diferencias entre la cantidad de cada tipo de elemento solicitada por el diseñador y la cantidad realmente colocada en el nivel. Las restricciones~(\ref{eq:delta1}) y~(\ref{eq:delta2}) obligan a que $\delta_t$ sea al menos la diferencia en ambos sentidos, por lo que, al minimizar, $\delta_t$ toma exactamente el valor absoluto de esa diferencia.
+
+\subsection{Restricciones}
+
+\paragraph{1. Un único tile por casilla.}
+\begin{equation}
+	\sum_{t \in T} x_{i,j,t} = 1 \qquad \forall i \in I,\; j \in J
+\end{equation}
+Cada casilla del nivel contiene exactamente un tipo de tile. Corresponde a las reglas de tile de Cooper~\cite{Cooper2022Sturgeon}.
+
+\paragraph{2. Un inicio y una meta en posiciones válidas.}
+\begin{align}
+	\sum_{i \in I}\sum_{j \in J} x_{i,j,\text{inicio}} = 1, \qquad & \sum_{i \in I}\sum_{j \in J} x_{i,j,\text{meta}} = 1 \\
+	x_{i,j,\text{inicio}} = 0 \quad \forall j > k, \qquad & x_{i,j,\text{meta}} = 0 \quad \forall j \leq W - k
+\end{align}
+El nivel tiene exactamente un punto de inicio, ubicado en las primeras $k$ columnas, y exactamente una meta, ubicada en las últimas $k$ columnas. Corresponde a las restricciones de inicio y meta de las reglas de alcanzabilidad de Cooper; las zonas válidas se adaptan al recorrido de izquierda a derecha de Mario.
+
+\paragraph{3. Patrones locales.}
+\begin{equation}
+	\left(X_{\cdot,j},\, X_{\cdot,j+1},\, X_{\cdot,j+2}\right) \in \Pi \qquad \forall j \in \{1, \dots, W-2\}
+\end{equation}
+donde $X_{\cdot,j}$ es la columna $j$ completa del nivel. Esta restricción revisa el nivel de a tres columnas seguidas y exige que cada uno de esos grupos ya haya aparecido en un nivel de ejemplo de \textit{Super Mario Bros.} Así, el nivel generado se ve como uno del juego original y se evitan cosas que no tienen sentido, como una tubería cortada por la mitad. Se basa en las reglas de patrón de Cooper~\cite{Cooper2022Sturgeon}.
+
+\paragraph{4. Casillas abiertas.}
+\begin{equation}
+	a_u = \sum_{t \in T_a} x_{u,t} \qquad \forall u \in V
+\end{equation}
+Una casilla se considera abierta si y solo si contiene un tile que el avatar puede atravesar.
+
+\paragraph{5. Validez de los movimientos.}
+\begin{align}
+	z_e &\leq a_c && \forall e \in E,\; c \in A(e) \\
+	z_e &\leq 1 - a_c && \forall e \in E,\; c \in B(e)
+\end{align}
+Un movimiento solo puede utilizarse si las casillas que exige abiertas están abiertas y las que exige cerradas están cerradas. Por ejemplo, un salto solo es posible si el avatar parte desde encima de un tile cerrado y todas las casillas del arco del salto están libres.
+
+\paragraph{6. Continuidad del camino.}
+\begin{align}
+	z_e &\leq r_u && \forall e = (u,v) \in E \\
+	\sum_{e \in \mathrm{in}(v)} z_e \leq 1, \qquad & \sum_{e \in \mathrm{out}(v)} z_e \leq 1 && \forall v \in V \\
+	r_v &\leq x_{v,\text{inicio}} + \sum_{e \in \mathrm{in}(v)} z_e && \forall v \in V
+\end{align}
+Solo puede salir un movimiento desde una casilla que pertenece al camino; cada casilla tiene a lo más un movimiento de entrada y uno de salida; y una casilla que no es el inicio solo pertenece al camino si se llega a ella mediante algún movimiento.
+
+\paragraph{7. El camino une el inicio con la meta.}
+\begin{align}
+	x_{v,\text{inicio}} \leq r_v, \qquad & x_{v,\text{inicio}} + z_e \leq 1 \quad \forall e \in \mathrm{in}(v) && \forall v \in V \\
+	x_{v,\text{meta}} \leq r_v, \qquad & x_{v,\text{meta}} + z_e \leq 1 \quad \forall e \in \mathrm{out}(v) && \forall v \in V
+\end{align}
+La casilla de inicio pertenece al camino y no recibe movimientos, y la casilla de la meta pertenece al camino y no tiene movimientos de salida. Junto con la restricción 6, esto obliga a que exista una secuencia de movimientos válidos que parte en el inicio y termina en la meta: es la \textbf{restricción de jugabilidad}. Las restricciones 4 a 7 corresponden a las reglas de alcanzabilidad de Cooper con la plantilla de movimiento para juegos de plataformas.
+
+\paragraph{8. Apoyo de enemigos (adición no presente en Cooper).}
+\begin{equation}
+	x_{i,j,\text{enemigo}} \leq \sum_{t \in T_c} x_{i+1,j,t} \quad \forall i \in \{1, \dots, H-1\},\; j \in J, \qquad x_{H,j,\text{enemigo}} = 0 \quad \forall j \in J
+\end{equation}
+Todo enemigo debe ubicarse directamente sobre un tile cerrado, como el suelo o una plataforma, y por lo tanto no puede estar en la última fila. En Sturgeon esta condición no se impone explícitamente, sino que emerge de los patrones aprendidos; aquí se agrega como restricción para asegurar este comportamiento propio de \textit{Super Mario Bros.}
+
+\paragraph{Resumen del modelo.} El problema consiste en encontrar valores para $x$, $a$, $r$, $z$ y $\delta$ que minimicen~(\ref{eq:objetivo}) sujeto a las restricciones 1 a 8. Las restricciones 4 a 7 en conjunto aseguran la jugabilidad del nivel: definen qué movimientos son posibles y exigen que exista una cadena de ellos desde el inicio hasta la meta.
+
+\section{Conclusiones}
+Las técnicas revisadas no resuelven exactamente el mismo problema planteado en este documento: Launchpad crea y une escenas~\cite{Smith2011Launchpad}, Scene Stitching solo las une~\cite{Green2020SceneStitching}, Shaker et al. ajustan parámetros~\cite{Shaker2010Personalized} y Sturgeon genera el nivel casilla por casilla~\cite{Cooper2022Sturgeon}, siendo este último el más cercano al modelo propuesto. Todas se parecen en que buscan niveles jugables y en que usan alguna medida de calidad definida por el diseñador o el jugador. Lo que más las diferencia es cómo aseguran la jugabilidad, ya sea por construcción, revisándola con un agente o como una restricción, y cada una tiene sus limitaciones: Launchpad solo genera niveles de un camino, Scene Stitching depende de escenas ya creadas y de un agente costoso, Shaker et al. no modelan la jugabilidad y Sturgeon se vuelve lento en niveles grandes o al reparar niveles.
+
+Una idea para seguir investigando es juntar ambas partes del problema: crear escenas jugables a partir del ritmo, como en Launchpad, y unirlas con un modelo de restricciones como el de este documento, para asegurar la jugabilidad del nivel completo sin tener que jugarlo con un agente.
+
+\section{Uso LLMs}
+\begin{enumerate}
+	\item Herramienta utilizada: Claude (Modelo Opus 5.5 en formato Alto consumo), Plan Claude Pro de Anthropic.
+	\item Prop\'osito de uso: Citar las referencias en LaTex, encontrar ideas de referencias para indagar, resumir en PDF las referencias, apoyo en fórmulas LaTex para el modelo matemático.
+	\item Prompts relevantes: Resume en español estos papers de PCG. Expresa el modelo de Sturgeon en notación matemática. Busca papers complementarios.
+	\item Nivel de edici\'on: Se copió y pegó las citas en la bibliografía con una revisión posterior para confirmar correctitud de formato APA y reglas de citado de cada referencia, al igual que el modelo matemático, el cual fue revisado y corregido posteriormente.
+	\item Validaci\'on: Uso de papers, apuntes de clase, juicio propio.
+\end{enumerate}
+
+\bibliographystyle{plain}
+\bibliography{Referencias}
+
+\end{document} 

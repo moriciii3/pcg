@@ -1,0 +1,59 @@
+\begin{thebibliography}{1}
+
+\bibitem{Cooper2022Sturgeon}
+Seth Cooper.
+\newblock {Sturgeon}: Tile-based procedural level generation via learned and
+  designed constraints.
+\newblock In {\em Proceedings of the Eighteenth AAAI Conference on Artificial
+  Intelligence and Interactive Digital Entertainment (AIIDE)}, pages 26--36.
+  AAAI Press, 2022.
+\newblock \url{https://doi.org/10.1609/aiide.v18i1.21944}.
+
+\bibitem{Green2020SceneStitching}
+Michael~Cerny Green, Luvneesh Mugrai, Ahmed Khalifa, and Julian Togelius.
+\newblock {Mario} level generation from mechanics using scene stitching.
+\newblock In {\em 2020 IEEE Conference on Games (CoG)}, pages 49--56, Osaka,
+  Japan, 2020. IEEE.
+\newblock Preprint: \url{https://arxiv.org/abs/2002.02992}.
+
+\bibitem{Karth2017WFC}
+Isaac Karth and Adam~M. Smith.
+\newblock {WaveFunctionCollapse} is constraint solving in the wild.
+\newblock In {\em Proceedings of the 12th International Conference on the
+  Foundations of Digital Games (FDG '17)}, pages 68:1--68:10, Hyannis, MA, USA,
+  2017. ACM.
+\newblock \url{https://doi.org/10.1145/3102071.3110566}.
+
+\bibitem{Maleki2024Survey}
+Mahdi~Farrokhi Maleki and Richard Zhao.
+\newblock Procedural content generation in games: A survey with insights on
+  emerging {LLM} integration.
+\newblock In {\em Proceedings of the AAAI Conference on Artificial Intelligence
+  and Interactive Digital Entertainment (AIIDE)}, pages 167--178. AAAI Press,
+  2024.
+\newblock \url{https://doi.org/10.1609/aiide.v20i1.31877}.
+
+\bibitem{Mawhorter2010ORE}
+Peter~A. Mawhorter and Michael Mateas.
+\newblock Procedural level generation using occupancy-regulated extension.
+\newblock In Georgios~N. Yannakakis and Julian Togelius, editors, {\em
+  Proceedings of the 2010 IEEE Conference on Computational Intelligence and
+  Games (CIG)}, pages 351--358, Copenhagen, Denmark, 2010. IEEE.
+
+\bibitem{Shaker2010Personalized}
+Noor Shaker, Georgios~N. Yannakakis, and Julian Togelius.
+\newblock Towards automatic personalized content generation for platform games.
+\newblock In {\em Proceedings of the Sixth AAAI Conference on Artificial
+  Intelligence and Interactive Digital Entertainment (AIIDE)}, pages 63--68,
+  Palo Alto, CA, USA, 2010. AAAI Press.
+\newblock \url{https://doi.org/10.1609/aiide.v6i1.12399}.
+
+\bibitem{Smith2011Launchpad}
+Gillian Smith, Jim Whitehead, Michael Mateas, Mike Treanor, Jameka March, and
+  Mee Cha.
+\newblock {Launchpad}: A rhythm-based level generator for {2-D} platformers.
+\newblock {\em IEEE Transactions on Computational Intelligence and AI in
+  Games}, 3(1):1--16, 2011.
+\newblock \url{https://doi.org/10.1109/TCIAIG.2010.2095855}.
+
+\end{thebibliography}
