@@ -17,6 +17,7 @@ struct Params {
     int target_count[NTYPES];
 
     // Parametros funcion objetivo
+    bool want_variation;
     double alpha;
     double beta;
 };
@@ -34,10 +35,18 @@ int countObjects(const Level& level, int k);
 // Calcula la linealidad del nivel con la entropia
 double linearity(const Level& level);
 
+double heightTerm(const Level& level, const Params& P);
+
+int totalTarget(const Params& P);
+
 // Evalua la funcion objetivo y entrega un valor
 double evaluate(const Level& level, const Params& P);
 
+// Evalua restricciones, sirve para HC
 bool isFeasible(const Level& level, const Params& P);
+
+// Guarda en nivel en un txt que luego es interpretado en Python
+void saveLevel(const Level& level, const Params& P, const string& path);
 
 // ---- greedy.cpp ----
 // Genera una solucion greedy mediante un punto inicial
