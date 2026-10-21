@@ -1,9 +1,8 @@
 #include "level.h"
-#include <bits/stdc++.h>
+#include <cmath>
+#include <fstream>
 using namespace std;
 
-// o_k = suma de x_ijk sobre todas las casillas
-// TODO: Hacer que esto se evite, la idea es hacer un diccionario que vaya aumentando cada vez que asigne, asi evitamos O(n2)
 int countObjects(const Level& level, int k) {
     int total = 0;
     for (int i = 0; i < level.W; i++)
@@ -12,42 +11,53 @@ int countObjects(const Level& level, int k) {
     return total;
 }
 
-// L = Entropia normalizada de las alturas de las plataformas.
-// Se cuenta solo la plataforma más alta de cada columna.
-// TODO: Ver si podemos evitar el O(n2) calculandolo en tiempo de construccion
+// Linealidad (como en Launchpad): que tan cerca siguen las plataformas una linea recta.
+// 1) Se toma un punto (i, j) por cada columna con plataforma.
+// 2) Se ajusta la recta j = a + b*i por minimos cuadrados.
+// 3) Se calcula la distancia promedio de los puntos a la recta y se normaliza.
+// Resultado entre 0 y 1: 1 = las plataformas siguen una recta, 0 = se alejan mucho.
 double linearity(const Level& level) {
-    vector<int> a(level.H, 0);
-    int total = 0;
+    vector<double> xs, ys;
     for (int i = 0; i < level.W; i++) {
         for (int j = 0; j < level.H; j++) {
-            if (level.cells[i][j] == PLATFORM) { a[j]++; total++; break; }
+            if (level.cells[i][j] == PLATFORM) { xs.push_back(i); ys.push_back(j); break; }
         }
     }
-    if (total == 0) return 0.0;
+    int n = xs.size();
+    if (n < 2) return 1.0;
 
-    double entropy = 0.0;
-    for (int j = 0; j < level.H; j++) {
-        if (a[j] == 0) continue; // p = 0 no aporta
-        double q = (double)a[j] / total;
-        entropy -= q * log2(q);
-    }
-    return entropy / log2(level.H);
+    // Recta de minimos cuadrados
+    double mx = 0, my = 0;
+    for (int t = 0; t < n; t++) { mx += xs[t]; my += ys[t]; }
+    mx /= n; my /= n;
+    double sxy = 0, sxx = 0;
+    for (int t = 0; t < n; t++) { sxy += (xs[t] - mx) * (ys[t] - my); sxx += (xs[t] - mx) * (xs[t] - mx); }
+    double b = (sxx > 0) ? sxy / sxx : 0.0;
+    double a = my - b * mx;
+
+    // Distancia promedio a la recta
+    double dist = 0;
+    for (int t = 0; t < n; t++) dist += abs(ys[t] - (a + b * xs[t]));
+    dist /= n;
+
+    // La mayor distancia promedio posible es cerca de la mitad del alto del mapa
+    double maxDist = (level.H - 1) / 2.0;
+    return max(0.0, 1.0 - dist / maxDist);
 }
 
-// Termino de forma: entre 0 y 1, siempre se minimiza
+
+// Retorna el valor absoluto de la diferencia entre la linealidad obtenida y la solicitada por el usuario
 double heightTerm(const Level& level, const Params& P) {
-    double L = linearity(level);
-    return P.want_variation ? 1.0 - L : L;
+    return abs(linearity(level) - P.L_target);
 }
 
-// Suma de lo pedido, para normalizar
-int totalTarget(const Params& P) {
+// Retorna el total de objetos solicitados por el diseñador (obstaculos, plataformas y enemigos)
+int totalTarget(const Params& P){
     int t = 0;
-    for (int k = 1; k < NTYPES; k++) t += P.target_count[k];
+    for(int k = 1; k < NTYPES; k++) t += P.target_count[k];
     return t;
 }
 
-// Funcion de evaluacion
 double evaluate(const Level& level, const Params& P) {
     double D = 0.0;
     for (int k = 1; k < NTYPES; k++)
@@ -56,18 +66,12 @@ double evaluate(const Level& level, const Params& P) {
     return P.alpha * D + P.beta * heightTerm(level, P);
 }
 
-// Evalua la factibilidad de una solucion
-bool isFeasible(const Level& level, const Params& P){
-    // TODO: Aplicar restricciones
-    return true;
-}
-
 // Guarda el nivel en un txt: arriba los parametros y resultados,
 // abajo una linea por casilla con el formato  (i,j) -> tipo
 void saveLevel(const Level& level, const Params& P, const string& path) {
     const string typeName[NTYPES] = {"empty", "platform", "obstacle", "enemy"};
     ofstream f(path);
- 
+
     // Encabezado: parametros
     f << "W " << P.W << "\n";
     f << "H " << P.H << "\n";
@@ -75,10 +79,11 @@ void saveLevel(const Level& level, const Params& P, const string& path) {
     f << "max_y_jump " << P.max_y_jump << "\n";
     f << "alpha " << P.alpha << "\n";
     f << "beta " << P.beta << "\n";
+    f << "L_target " << P.L_target << "\n";
     f << "target_platform " << P.target_count[PLATFORM] << "\n";
     f << "target_obstacle " << P.target_count[OBSTACLE] << "\n";
     f << "target_enemy " << P.target_count[ENEMY] << "\n";
- 
+
     // Encabezado: resultados
     f << "Z " << evaluate(level, P) << "\n";
     f << "linearity " << linearity(level) << "\n";
@@ -86,7 +91,7 @@ void saveLevel(const Level& level, const Params& P, const string& path) {
     f << "obstacle " << countObjects(level, OBSTACLE) << "\n";
     f << "enemy " << countObjects(level, ENEMY) << "\n";
     f << "---\n";
- 
+
     // Casillas
     for (int i = 0; i < level.W; i++)
         for (int j = 0; j < level.H; j++)

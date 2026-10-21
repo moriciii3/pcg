@@ -1,0 +1,91 @@
+\documentclass[letter, 10pt]{article}
+\usepackage[latin1]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage[dvips]{graphicx}
+\usepackage{url}
+\usepackage[top=3cm,bottom=3cm,left=3.5cm,right=3.5cm,footskip=1.5cm,headheight=1.5cm,headsep=.5cm,textheight=3cm]{geometry}
+
+
+
+\begin{document}
+\title{Inteligencia Artificial \\ \begin{Large}Primer avance: Problema Generación Procedural de Plataformas\end{Large}}
+\author{Bruno Morici}
+\date{\today}
+\maketitle
+
+
+%--------------------No borrar esta secci\'on--------------------------------%
+%\section*{Evaluaci\'on}
+
+%\begin{tabular}{ll}
+%Resumen (5\%): & \underline{\hspace{2cm}} \\
+%Introducci\'on (5\%):  & \underline{\hspace{2cm}} \\
+%Definici\'on del Problema (10\%):  & \underline{\hspace{2cm}} \\
+%Estado del Arte (40\%):  & \underline{\hspace{2cm}} \\
+%Modelo Matem\'atico (20\%): &  \underline{\hspace{2cm}}\\
+%Conclusiones (15\%): &  \underline{\hspace{2cm}}\\
+%Bibliograf\'ia (5\%): & \underline{\hspace{2cm}}\\
+% &  \\
+%\textbf{Nota Final (100\%)}:   & \underline{\hspace{2cm}}
+%\end{tabular}
+%---------------------------------------------------------------------------%
+%\vspace{2cm}
+
+
+\begin{abstract}
+Abstract
+\end{abstract}
+
+\section{Modelo Matemático}
+\subsection{Linealidad del nivel}
+En una primera versión, la linealidad se midió con la entropía de las alturas de las plataformas. Sin embargo, la entropía solo cuenta cuántas alturas distintas se usan y no cómo están ordenadas, por lo que un nivel que baja de forma constante en diagonal aparece como poco lineal aunque siga una recta. Por esto se cambió a una medida basada en la de Launchpad~\cite{Smith2011Launchpad}: se ajusta una recta a las alturas de las plataformas y se mide qué tan lejos quedan de ella.
+
+Sea $C$ el conjunto de columnas que tienen una plataforma y $n = |C|$ su cantidad:
+\begin{equation}
+C = \Big\{\, i \in I \;:\; \sum_{j \in J} x_{ijp} \geq 1 \,\Big\}
+\end{equation}
+
+Para cada columna $i \in C$, la altura de su plataforma es:
+\begin{equation}
+h_i = \sum_{j \in J} j \cdot x_{ijp} \qquad \forall\, i \in C
+\end{equation}
+Esta expresión supone una sola plataforma por columna, lo que se cumple en las soluciones generadas.
+
+Luego se ajusta la recta $\hat{h}(i) = a + b\,i$ por mínimos cuadrados, donde $\bar{i}$ y $\bar{h}$ son los promedios de las columnas y de las alturas:
+\begin{equation}
+b = \frac{\sum_{i \in C} (i - \bar{i})(h_i - \bar{h})}{\sum_{i \in C} (i - \bar{i})^2},
+\qquad
+a = \bar{h} - b\,\bar{i}
+\end{equation}
+
+La distancia promedio de las plataformas a la recta es:
+\begin{equation}
+d = \frac{1}{n} \sum_{i \in C} \big|\, h_i - (a + b\,i) \,\big|
+\end{equation}
+
+Finalmente, la linealidad se normaliza por la mitad del alto del mapa, que es la mayor distancia promedio posible, para que quede entre 0 y 1:
+\begin{equation}
+L = \max\left(0,\; 1 - \frac{d}{(H-1)/2}\right)
+\end{equation}
+Un valor de $L$ cercano a 1 indica que las plataformas siguen una recta (alta linealidad), mientras que un valor menor indica que el nivel sube y baja (baja linealidad).
+
+\subsection{Función objetivo}
+El diseñdor indica la cantidad deseada $O_k$ de cada tipo de objeto y la linealidad deseada $L^{*}$. La cantidad colocada de cada objeto es $o_k = \sum_{i \in I}\sum_{j \in J} x_{ijk}$, y el error en las cantidades se normaliza por el total pedido:
+\begin{equation}
+D = \frac{\sum_{k \in K} |\, o_k - O_k \,|}{\sum_{k \in K} O_k}
+\end{equation}
+
+La función objetivo combina ambos términos:
+\begin{equation}
+\min\; Z = \alpha \cdot D + \beta \cdot |\, L - L^{*} \,|,
+\qquad \alpha + \beta = 1,\quad \alpha, \beta \geq 0
+\end{equation}
+
+Como $D$ y $|L - L^{*}|$ quedan entre 0 y 1, los pesos $\alpha$ y $\beta$ indican directamente la importancia de cada parte: por ejemplo, con $\alpha = 0{,}7$ y $\beta = 0{,}3$ las cantidades pesan un 70\,\% y la linealidad un 30\,\%. Como $L$ depende de una recta ajustada y de valores absolutos, la función objetivo no es lineal, por lo que el problema se resuelve con métodos heurísticos (Greedy y Hill Climbing) en vez de un solver exacto.
+
+\bibliographystyle{plain}
+\bibliography{Referencias}
+
+\end{document} 

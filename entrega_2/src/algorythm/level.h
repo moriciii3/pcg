@@ -16,8 +16,9 @@ struct Params {
     // Cantidad pedida por el diseñador de cada objeto (O[EMPTY] no se usa)
     int target_count[NTYPES];
 
+    double L_target;
+
     // Parametros funcion objetivo
-    bool want_variation;
     double alpha;
     double beta;
 };
