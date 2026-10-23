@@ -12,14 +12,14 @@ int main() {
     P.H = 16;
 
     P.target_count[EMPTY]    = 0;     // no se usa
-    P.target_count[PLATFORM] = 75;
-    P.target_count[OBSTACLE] = 15;
-    P.target_count[ENEMY]    = 20;
+    P.target_count[PLATFORM] = 100;
+    P.target_count[OBSTACLE] = 10;
+    P.target_count[ENEMY]    = 15;
 
     // Funcion objetivo: Z = alpha * D + beta * T   (alpha + beta = 1)
-    P.alpha = 0.7;
-    P.beta  = 1 - P.alpha;
-    P.L_target = 0.5; // Linealidad
+    P.alpha = 0.7;                // 70% importan las cantidades
+    P.beta  = 0.3;                // 30% importa la forma del nivel
+    P.L_target = 0.85;            // alta linealidad (1 = recta, 0.5 = sube y baja mucho)
 
     // Crear la carpeta out/ si no existe
     filesystem::create_directories("out");
@@ -31,6 +31,7 @@ int main() {
     string path = "../out/greedy_alta_linealidad.txt";
     saveLevel(level, P, path);
 
+    cout << "Factible    = " << (isFeasible(level, P) ? "si" : "no") << "\n";
     cout << "Z           = " << evaluate(level, P) << "\n";
     cout << "Linealidad  = " << linearity(level) << "\n";
     cout << "Plataformas = " << countObjects(level, PLATFORM) << " / " << P.target_count[PLATFORM] << "\n";

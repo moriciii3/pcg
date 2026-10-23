@@ -4,15 +4,15 @@ max_x_jump 6
 max_y_jump 4
 alpha 0.7
 beta 0.3
-L_target 0.5
-target_platform 75
-target_obstacle 15
-target_enemy 20
-Z 9.72136e-05
-linearity 0.499676
-platform 75
-obstacle 15
-enemy 20
+L_target 0.85
+target_platform 100
+target_obstacle 10
+target_enemy 15
+Z 1.74771e-05
+linearity 0.849942
+platform 100
+obstacle 10
+enemy 15
 ---
 (0,0) -> empty
 (0,1) -> empty
@@ -51,7 +51,7 @@ enemy 20
 (2,2) -> empty
 (2,3) -> empty
 (2,4) -> empty
-(2,5) -> empty
+(2,5) -> platform
 (2,6) -> empty
 (2,7) -> empty
 (2,8) -> empty
@@ -63,12 +63,12 @@ enemy 20
 (2,14) -> empty
 (2,15) -> empty
 (3,0) -> empty
-(3,1) -> empty
+(3,1) -> platform
 (3,2) -> empty
 (3,3) -> empty
 (3,4) -> empty
-(3,5) -> platform
-(3,6) -> enemy
+(3,5) -> empty
+(3,6) -> empty
 (3,7) -> empty
 (3,8) -> empty
 (3,9) -> empty
@@ -79,7 +79,7 @@ enemy 20
 (3,14) -> empty
 (3,15) -> empty
 (4,0) -> empty
-(4,1) -> platform
+(4,1) -> empty
 (4,2) -> empty
 (4,3) -> empty
 (4,4) -> empty
@@ -97,8 +97,8 @@ enemy 20
 (5,0) -> empty
 (5,1) -> empty
 (5,2) -> empty
-(5,3) -> empty
-(5,4) -> empty
+(5,3) -> platform
+(5,4) -> enemy
 (5,5) -> empty
 (5,6) -> empty
 (5,7) -> empty
@@ -114,9 +114,9 @@ enemy 20
 (6,1) -> empty
 (6,2) -> empty
 (6,3) -> empty
-(6,4) -> empty
-(6,5) -> platform
-(6,6) -> obstacle
+(6,4) -> platform
+(6,5) -> empty
+(6,6) -> empty
 (6,7) -> empty
 (6,8) -> empty
 (6,9) -> empty
@@ -135,7 +135,7 @@ enemy 20
 (7,6) -> empty
 (7,7) -> empty
 (7,8) -> empty
-(7,9) -> platform
+(7,9) -> empty
 (7,10) -> empty
 (7,11) -> empty
 (7,12) -> empty
@@ -146,8 +146,8 @@ enemy 20
 (8,1) -> empty
 (8,2) -> empty
 (8,3) -> empty
-(8,4) -> empty
-(8,5) -> empty
+(8,4) -> platform
+(8,5) -> obstacle
 (8,6) -> empty
 (8,7) -> empty
 (8,8) -> empty
@@ -155,12 +155,12 @@ enemy 20
 (8,10) -> empty
 (8,11) -> empty
 (8,12) -> empty
-(8,13) -> platform
+(8,13) -> empty
 (8,14) -> empty
 (8,15) -> empty
 (9,0) -> empty
 (9,1) -> empty
-(9,2) -> empty
+(9,2) -> platform
 (9,3) -> empty
 (9,4) -> empty
 (9,5) -> empty
@@ -194,7 +194,7 @@ enemy 20
 (11,1) -> empty
 (11,2) -> empty
 (11,3) -> empty
-(11,4) -> empty
+(11,4) -> platform
 (11,5) -> empty
 (11,6) -> empty
 (11,7) -> empty
@@ -211,7 +211,7 @@ enemy 20
 (12,2) -> empty
 (12,3) -> empty
 (12,4) -> empty
-(12,5) -> empty
+(12,5) -> platform
 (12,6) -> empty
 (12,7) -> empty
 (12,8) -> empty
@@ -231,8 +231,8 @@ enemy 20
 (13,6) -> empty
 (13,7) -> empty
 (13,8) -> empty
-(13,9) -> platform
-(13,10) -> enemy
+(13,9) -> empty
+(13,10) -> empty
 (13,11) -> empty
 (13,12) -> empty
 (13,13) -> empty
@@ -243,8 +243,8 @@ enemy 20
 (14,2) -> empty
 (14,3) -> empty
 (14,4) -> empty
-(14,5) -> platform
-(14,6) -> empty
+(14,5) -> empty
+(14,6) -> platform
 (14,7) -> empty
 (14,8) -> empty
 (14,9) -> empty
@@ -255,13 +255,13 @@ enemy 20
 (14,14) -> empty
 (14,15) -> empty
 (15,0) -> empty
-(15,1) -> platform
-(15,2) -> obstacle
+(15,1) -> empty
+(15,2) -> empty
 (15,3) -> empty
 (15,4) -> empty
 (15,5) -> empty
-(15,6) -> empty
-(15,7) -> empty
+(15,6) -> platform
+(15,7) -> enemy
 (15,8) -> empty
 (15,9) -> empty
 (15,10) -> empty
@@ -270,7 +270,7 @@ enemy 20
 (15,13) -> empty
 (15,14) -> empty
 (15,15) -> empty
-(16,0) -> platform
+(16,0) -> empty
 (16,1) -> empty
 (16,2) -> empty
 (16,3) -> empty
@@ -290,7 +290,7 @@ enemy 20
 (17,1) -> empty
 (17,2) -> empty
 (17,3) -> empty
-(17,4) -> empty
+(17,4) -> platform
 (17,5) -> empty
 (17,6) -> empty
 (17,7) -> empty
@@ -305,7 +305,7 @@ enemy 20
 (18,0) -> empty
 (18,1) -> empty
 (18,2) -> empty
-(18,3) -> empty
+(18,3) -> platform
 (18,4) -> empty
 (18,5) -> empty
 (18,6) -> empty
@@ -334,10 +334,10 @@ enemy 20
 (19,13) -> empty
 (19,14) -> empty
 (19,15) -> empty
-(20,0) -> platform
-(20,1) -> enemy
+(20,0) -> empty
+(20,1) -> empty
 (20,2) -> empty
-(20,3) -> empty
+(20,3) -> platform
 (20,4) -> empty
 (20,5) -> empty
 (20,6) -> empty
@@ -355,7 +355,7 @@ enemy 20
 (21,2) -> empty
 (21,3) -> empty
 (21,4) -> empty
-(21,5) -> empty
+(21,5) -> platform
 (21,6) -> empty
 (21,7) -> empty
 (21,8) -> empty
@@ -386,10 +386,10 @@ enemy 20
 (23,1) -> empty
 (23,2) -> empty
 (23,3) -> empty
-(23,4) -> platform
+(23,4) -> empty
 (23,5) -> empty
-(23,6) -> empty
-(23,7) -> empty
+(23,6) -> platform
+(23,7) -> obstacle
 (23,8) -> empty
 (23,9) -> empty
 (23,10) -> empty
@@ -404,7 +404,7 @@ enemy 20
 (24,3) -> empty
 (24,4) -> empty
 (24,5) -> empty
-(24,6) -> empty
+(24,6) -> platform
 (24,7) -> empty
 (24,8) -> empty
 (24,9) -> empty
@@ -422,8 +422,8 @@ enemy 20
 (25,5) -> empty
 (25,6) -> empty
 (25,7) -> empty
-(25,8) -> platform
-(25,9) -> obstacle
+(25,8) -> empty
+(25,9) -> empty
 (25,10) -> empty
 (25,11) -> empty
 (25,12) -> empty
@@ -437,13 +437,13 @@ enemy 20
 (26,4) -> empty
 (26,5) -> empty
 (26,6) -> empty
-(26,7) -> empty
-(26,8) -> empty
+(26,7) -> platform
+(26,8) -> enemy
 (26,9) -> empty
 (26,10) -> empty
 (26,11) -> empty
-(26,12) -> platform
-(26,13) -> enemy
+(26,12) -> empty
+(26,13) -> empty
 (26,14) -> empty
 (26,15) -> empty
 (27,0) -> empty
@@ -453,14 +453,14 @@ enemy 20
 (27,4) -> empty
 (27,5) -> empty
 (27,6) -> empty
-(27,7) -> empty
+(27,7) -> platform
 (27,8) -> empty
 (27,9) -> empty
 (27,10) -> empty
 (27,11) -> empty
 (27,12) -> empty
 (27,13) -> empty
-(27,14) -> platform
+(27,14) -> empty
 (27,15) -> empty
 (28,0) -> empty
 (28,1) -> empty
@@ -483,7 +483,7 @@ enemy 20
 (29,2) -> empty
 (29,3) -> empty
 (29,4) -> empty
-(29,5) -> empty
+(29,5) -> platform
 (29,6) -> empty
 (29,7) -> empty
 (29,8) -> empty
@@ -502,13 +502,13 @@ enemy 20
 (30,5) -> empty
 (30,6) -> empty
 (30,7) -> empty
-(30,8) -> empty
+(30,8) -> platform
 (30,9) -> empty
 (30,10) -> empty
 (30,11) -> empty
 (30,12) -> empty
 (30,13) -> empty
-(30,14) -> platform
+(30,14) -> empty
 (30,15) -> empty
 (31,0) -> empty
 (31,1) -> empty
@@ -534,13 +534,13 @@ enemy 20
 (32,5) -> empty
 (32,6) -> empty
 (32,7) -> empty
-(32,8) -> empty
+(32,8) -> platform
 (32,9) -> empty
 (32,10) -> empty
 (32,11) -> empty
 (32,12) -> empty
 (32,13) -> empty
-(32,14) -> platform
+(32,14) -> empty
 (32,15) -> empty
 (33,0) -> empty
 (33,1) -> empty
@@ -548,7 +548,7 @@ enemy 20
 (33,3) -> empty
 (33,4) -> empty
 (33,5) -> empty
-(33,6) -> empty
+(33,6) -> platform
 (33,7) -> empty
 (33,8) -> empty
 (33,9) -> empty
@@ -580,16 +580,16 @@ enemy 20
 (35,3) -> empty
 (35,4) -> empty
 (35,5) -> empty
-(35,6) -> empty
-(35,7) -> empty
+(35,6) -> platform
+(35,7) -> enemy
 (35,8) -> empty
 (35,9) -> empty
 (35,10) -> empty
 (35,11) -> empty
 (35,12) -> empty
 (35,13) -> empty
-(35,14) -> platform
-(35,15) -> enemy
+(35,14) -> empty
+(35,15) -> empty
 (36,0) -> empty
 (36,1) -> empty
 (36,2) -> empty
@@ -598,7 +598,7 @@ enemy 20
 (36,5) -> empty
 (36,6) -> empty
 (36,7) -> empty
-(36,8) -> empty
+(36,8) -> platform
 (36,9) -> empty
 (36,10) -> empty
 (36,11) -> empty
@@ -616,8 +616,8 @@ enemy 20
 (37,7) -> empty
 (37,8) -> empty
 (37,9) -> empty
-(37,10) -> platform
-(37,11) -> obstacle
+(37,10) -> empty
+(37,11) -> empty
 (37,12) -> empty
 (37,13) -> empty
 (37,14) -> empty
@@ -629,7 +629,7 @@ enemy 20
 (38,4) -> empty
 (38,5) -> empty
 (38,6) -> platform
-(38,7) -> empty
+(38,7) -> obstacle
 (38,8) -> empty
 (38,9) -> empty
 (38,10) -> empty
@@ -644,7 +644,7 @@ enemy 20
 (39,3) -> empty
 (39,4) -> empty
 (39,5) -> empty
-(39,6) -> empty
+(39,6) -> platform
 (39,7) -> empty
 (39,8) -> empty
 (39,9) -> empty
@@ -657,7 +657,7 @@ enemy 20
 (40,0) -> empty
 (40,1) -> empty
 (40,2) -> empty
-(40,3) -> platform
+(40,3) -> empty
 (40,4) -> empty
 (40,5) -> empty
 (40,6) -> empty
@@ -675,7 +675,7 @@ enemy 20
 (41,2) -> empty
 (41,3) -> empty
 (41,4) -> empty
-(41,5) -> empty
+(41,5) -> platform
 (41,6) -> empty
 (41,7) -> empty
 (41,8) -> empty
@@ -692,9 +692,9 @@ enemy 20
 (42,3) -> empty
 (42,4) -> empty
 (42,5) -> empty
-(42,6) -> empty
-(42,7) -> platform
-(42,8) -> enemy
+(42,6) -> platform
+(42,7) -> empty
+(42,8) -> empty
 (42,9) -> empty
 (42,10) -> empty
 (42,11) -> empty
@@ -723,8 +723,8 @@ enemy 20
 (44,2) -> empty
 (44,3) -> empty
 (44,4) -> empty
-(44,5) -> empty
-(44,6) -> platform
+(44,5) -> platform
+(44,6) -> empty
 (44,7) -> empty
 (44,8) -> empty
 (44,9) -> empty
@@ -739,8 +739,8 @@ enemy 20
 (45,2) -> empty
 (45,3) -> empty
 (45,4) -> empty
-(45,5) -> empty
-(45,6) -> empty
+(45,5) -> platform
+(45,6) -> enemy
 (45,7) -> empty
 (45,8) -> empty
 (45,9) -> empty
@@ -756,8 +756,8 @@ enemy 20
 (46,3) -> empty
 (46,4) -> empty
 (46,5) -> empty
-(46,6) -> platform
-(46,7) -> obstacle
+(46,6) -> empty
+(46,7) -> empty
 (46,8) -> empty
 (46,9) -> empty
 (46,10) -> empty
@@ -771,7 +771,7 @@ enemy 20
 (47,2) -> empty
 (47,3) -> empty
 (47,4) -> empty
-(47,5) -> empty
+(47,5) -> platform
 (47,6) -> empty
 (47,7) -> empty
 (47,8) -> empty
@@ -786,8 +786,8 @@ enemy 20
 (48,1) -> empty
 (48,2) -> empty
 (48,3) -> empty
-(48,4) -> platform
-(48,5) -> enemy
+(48,4) -> empty
+(48,5) -> platform
 (48,6) -> empty
 (48,7) -> empty
 (48,8) -> empty
@@ -820,7 +820,7 @@ enemy 20
 (50,3) -> empty
 (50,4) -> empty
 (50,5) -> empty
-(50,6) -> empty
+(50,6) -> platform
 (50,7) -> empty
 (50,8) -> empty
 (50,9) -> empty
@@ -833,12 +833,12 @@ enemy 20
 (51,0) -> empty
 (51,1) -> empty
 (51,2) -> empty
-(51,3) -> platform
+(51,3) -> empty
 (51,4) -> empty
 (51,5) -> empty
 (51,6) -> empty
 (51,7) -> empty
-(51,8) -> empty
+(51,8) -> platform
 (51,9) -> empty
 (51,10) -> empty
 (51,11) -> empty
@@ -848,7 +848,7 @@ enemy 20
 (51,15) -> empty
 (52,0) -> empty
 (52,1) -> empty
-(52,2) -> platform
+(52,2) -> empty
 (52,3) -> empty
 (52,4) -> empty
 (52,5) -> empty
@@ -870,8 +870,8 @@ enemy 20
 (53,5) -> empty
 (53,6) -> empty
 (53,7) -> empty
-(53,8) -> empty
-(53,9) -> empty
+(53,8) -> platform
+(53,9) -> obstacle
 (53,10) -> empty
 (53,11) -> empty
 (53,12) -> empty
@@ -886,7 +886,7 @@ enemy 20
 (54,5) -> empty
 (54,6) -> empty
 (54,7) -> empty
-(54,8) -> empty
+(54,8) -> platform
 (54,9) -> empty
 (54,10) -> empty
 (54,11) -> empty
@@ -896,8 +896,8 @@ enemy 20
 (54,15) -> empty
 (55,0) -> empty
 (55,1) -> empty
-(55,2) -> platform
-(55,3) -> obstacle
+(55,2) -> empty
+(55,3) -> empty
 (55,4) -> empty
 (55,5) -> empty
 (55,6) -> empty
@@ -911,13 +911,13 @@ enemy 20
 (55,14) -> empty
 (55,15) -> empty
 (56,0) -> empty
-(56,1) -> platform
-(56,2) -> enemy
+(56,1) -> empty
+(56,2) -> empty
 (56,3) -> empty
 (56,4) -> empty
 (56,5) -> empty
-(56,6) -> empty
-(56,7) -> empty
+(56,6) -> platform
+(56,7) -> enemy
 (56,8) -> empty
 (56,9) -> empty
 (56,10) -> empty
@@ -932,7 +932,7 @@ enemy 20
 (57,3) -> empty
 (57,4) -> empty
 (57,5) -> empty
-(57,6) -> empty
+(57,6) -> platform
 (57,7) -> empty
 (57,8) -> empty
 (57,9) -> empty
@@ -943,7 +943,7 @@ enemy 20
 (57,14) -> empty
 (57,15) -> empty
 (58,0) -> empty
-(58,1) -> platform
+(58,1) -> empty
 (58,2) -> empty
 (58,3) -> empty
 (58,4) -> empty
@@ -964,7 +964,7 @@ enemy 20
 (59,3) -> empty
 (59,4) -> empty
 (59,5) -> empty
-(59,6) -> empty
+(59,6) -> platform
 (59,7) -> empty
 (59,8) -> empty
 (59,9) -> empty
@@ -979,7 +979,7 @@ enemy 20
 (60,2) -> empty
 (60,3) -> empty
 (60,4) -> empty
-(60,5) -> empty
+(60,5) -> platform
 (60,6) -> empty
 (60,7) -> empty
 (60,8) -> empty
@@ -990,7 +990,7 @@ enemy 20
 (60,13) -> empty
 (60,14) -> empty
 (60,15) -> empty
-(61,0) -> platform
+(61,0) -> empty
 (61,1) -> empty
 (61,2) -> empty
 (61,3) -> empty
@@ -1006,13 +1006,13 @@ enemy 20
 (61,13) -> empty
 (61,14) -> empty
 (61,15) -> empty
-(62,0) -> platform
+(62,0) -> empty
 (62,1) -> empty
 (62,2) -> empty
 (62,3) -> empty
 (62,4) -> empty
 (62,5) -> empty
-(62,6) -> empty
+(62,6) -> platform
 (62,7) -> empty
 (62,8) -> empty
 (62,9) -> empty
@@ -1030,7 +1030,7 @@ enemy 20
 (63,5) -> empty
 (63,6) -> empty
 (63,7) -> empty
-(63,8) -> empty
+(63,8) -> platform
 (63,9) -> empty
 (63,10) -> empty
 (63,11) -> empty
@@ -1038,8 +1038,8 @@ enemy 20
 (63,13) -> empty
 (63,14) -> empty
 (63,15) -> empty
-(64,0) -> platform
-(64,1) -> enemy
+(64,0) -> empty
+(64,1) -> empty
 (64,2) -> empty
 (64,3) -> empty
 (64,4) -> empty
@@ -1060,8 +1060,8 @@ enemy 20
 (65,3) -> empty
 (65,4) -> empty
 (65,5) -> empty
-(65,6) -> empty
-(65,7) -> empty
+(65,6) -> platform
+(65,7) -> enemy
 (65,8) -> empty
 (65,9) -> empty
 (65,10) -> empty
@@ -1070,12 +1070,12 @@ enemy 20
 (65,13) -> empty
 (65,14) -> empty
 (65,15) -> empty
-(66,0) -> platform
-(66,1) -> obstacle
+(66,0) -> empty
+(66,1) -> empty
 (66,2) -> empty
 (66,3) -> empty
 (66,4) -> empty
-(66,5) -> empty
+(66,5) -> platform
 (66,6) -> empty
 (66,7) -> empty
 (66,8) -> empty
@@ -1108,8 +1108,8 @@ enemy 20
 (68,3) -> empty
 (68,4) -> empty
 (68,5) -> empty
-(68,6) -> empty
-(68,7) -> empty
+(68,6) -> platform
+(68,7) -> obstacle
 (68,8) -> empty
 (68,9) -> empty
 (68,10) -> empty
@@ -1122,11 +1122,11 @@ enemy 20
 (69,1) -> empty
 (69,2) -> empty
 (69,3) -> empty
-(69,4) -> platform
+(69,4) -> empty
 (69,5) -> empty
 (69,6) -> empty
 (69,7) -> empty
-(69,8) -> empty
+(69,8) -> platform
 (69,9) -> empty
 (69,10) -> empty
 (69,11) -> empty
@@ -1142,7 +1142,7 @@ enemy 20
 (70,5) -> empty
 (70,6) -> empty
 (70,7) -> empty
-(70,8) -> platform
+(70,8) -> empty
 (70,9) -> empty
 (70,10) -> empty
 (70,11) -> empty
@@ -1158,7 +1158,7 @@ enemy 20
 (71,5) -> empty
 (71,6) -> empty
 (71,7) -> empty
-(71,8) -> empty
+(71,8) -> platform
 (71,9) -> empty
 (71,10) -> empty
 (71,11) -> empty
@@ -1172,11 +1172,11 @@ enemy 20
 (72,3) -> empty
 (72,4) -> empty
 (72,5) -> empty
-(72,6) -> empty
+(72,6) -> platform
 (72,7) -> empty
 (72,8) -> empty
-(72,9) -> platform
-(72,10) -> enemy
+(72,9) -> empty
+(72,10) -> empty
 (72,11) -> empty
 (72,12) -> empty
 (72,13) -> empty
@@ -1203,7 +1203,7 @@ enemy 20
 (74,2) -> empty
 (74,3) -> empty
 (74,4) -> empty
-(74,5) -> empty
+(74,5) -> platform
 (74,6) -> empty
 (74,7) -> empty
 (74,8) -> empty
@@ -1221,9 +1221,9 @@ enemy 20
 (75,4) -> empty
 (75,5) -> empty
 (75,6) -> empty
-(75,7) -> platform
-(75,8) -> obstacle
-(75,9) -> empty
+(75,7) -> empty
+(75,8) -> platform
+(75,9) -> enemy
 (75,10) -> empty
 (75,11) -> empty
 (75,12) -> empty
@@ -1238,7 +1238,7 @@ enemy 20
 (76,5) -> empty
 (76,6) -> empty
 (76,7) -> empty
-(76,8) -> platform
+(76,8) -> empty
 (76,9) -> empty
 (76,10) -> empty
 (76,11) -> empty
@@ -1252,7 +1252,7 @@ enemy 20
 (77,3) -> empty
 (77,4) -> empty
 (77,5) -> empty
-(77,6) -> empty
+(77,6) -> platform
 (77,7) -> empty
 (77,8) -> empty
 (77,9) -> empty
@@ -1267,11 +1267,11 @@ enemy 20
 (78,2) -> empty
 (78,3) -> empty
 (78,4) -> empty
-(78,5) -> empty
+(78,5) -> platform
 (78,6) -> empty
 (78,7) -> empty
-(78,8) -> platform
-(78,9) -> enemy
+(78,8) -> empty
+(78,9) -> empty
 (78,10) -> empty
 (78,11) -> empty
 (78,12) -> empty
@@ -1300,10 +1300,10 @@ enemy 20
 (80,3) -> empty
 (80,4) -> empty
 (80,5) -> empty
-(80,6) -> empty
+(80,6) -> platform
 (80,7) -> empty
 (80,8) -> empty
-(80,9) -> platform
+(80,9) -> empty
 (80,10) -> empty
 (80,11) -> empty
 (80,12) -> empty
@@ -1315,7 +1315,7 @@ enemy 20
 (81,2) -> empty
 (81,3) -> empty
 (81,4) -> empty
-(81,5) -> empty
+(81,5) -> platform
 (81,6) -> empty
 (81,7) -> empty
 (81,8) -> empty
@@ -1336,7 +1336,7 @@ enemy 20
 (82,7) -> empty
 (82,8) -> empty
 (82,9) -> empty
-(82,10) -> platform
+(82,10) -> empty
 (82,11) -> empty
 (82,12) -> empty
 (82,13) -> empty
@@ -1347,8 +1347,8 @@ enemy 20
 (83,2) -> empty
 (83,3) -> empty
 (83,4) -> empty
-(83,5) -> empty
-(83,6) -> empty
+(83,5) -> platform
+(83,6) -> obstacle
 (83,7) -> empty
 (83,8) -> empty
 (83,9) -> empty
@@ -1363,7 +1363,7 @@ enemy 20
 (84,2) -> empty
 (84,3) -> empty
 (84,4) -> empty
-(84,5) -> empty
+(84,5) -> platform
 (84,6) -> empty
 (84,7) -> empty
 (84,8) -> empty
@@ -1385,8 +1385,8 @@ enemy 20
 (85,8) -> empty
 (85,9) -> empty
 (85,10) -> empty
-(85,11) -> platform
-(85,12) -> obstacle
+(85,11) -> empty
+(85,12) -> empty
 (85,13) -> empty
 (85,14) -> empty
 (85,15) -> empty
@@ -1395,14 +1395,14 @@ enemy 20
 (86,2) -> empty
 (86,3) -> empty
 (86,4) -> empty
-(86,5) -> empty
-(86,6) -> empty
+(86,5) -> platform
+(86,6) -> enemy
 (86,7) -> empty
 (86,8) -> empty
 (86,9) -> empty
 (86,10) -> empty
-(86,11) -> platform
-(86,12) -> enemy
+(86,11) -> empty
+(86,12) -> empty
 (86,13) -> empty
 (86,14) -> empty
 (86,15) -> empty
@@ -1411,7 +1411,7 @@ enemy 20
 (87,2) -> empty
 (87,3) -> empty
 (87,4) -> empty
-(87,5) -> empty
+(87,5) -> platform
 (87,6) -> empty
 (87,7) -> empty
 (87,8) -> empty
@@ -1443,14 +1443,14 @@ enemy 20
 (89,2) -> empty
 (89,3) -> empty
 (89,4) -> empty
-(89,5) -> empty
+(89,5) -> platform
 (89,6) -> empty
 (89,7) -> empty
 (89,8) -> empty
 (89,9) -> empty
 (89,10) -> empty
 (89,11) -> empty
-(89,12) -> platform
+(89,12) -> empty
 (89,13) -> empty
 (89,14) -> empty
 (89,15) -> empty
@@ -1458,7 +1458,7 @@ enemy 20
 (90,1) -> empty
 (90,2) -> empty
 (90,3) -> empty
-(90,4) -> empty
+(90,4) -> platform
 (90,5) -> empty
 (90,6) -> empty
 (90,7) -> empty
@@ -1483,7 +1483,7 @@ enemy 20
 (91,10) -> empty
 (91,11) -> empty
 (91,12) -> empty
-(91,13) -> platform
+(91,13) -> empty
 (91,14) -> empty
 (91,15) -> empty
 (92,0) -> empty
@@ -1491,7 +1491,7 @@ enemy 20
 (92,2) -> empty
 (92,3) -> empty
 (92,4) -> empty
-(92,5) -> empty
+(92,5) -> platform
 (92,6) -> empty
 (92,7) -> empty
 (92,8) -> empty
@@ -1500,14 +1500,14 @@ enemy 20
 (92,11) -> empty
 (92,12) -> empty
 (92,13) -> empty
-(92,14) -> platform
+(92,14) -> empty
 (92,15) -> empty
 (93,0) -> empty
 (93,1) -> empty
 (93,2) -> empty
 (93,3) -> empty
 (93,4) -> empty
-(93,5) -> empty
+(93,5) -> platform
 (93,6) -> empty
 (93,7) -> empty
 (93,8) -> empty
@@ -1532,15 +1532,15 @@ enemy 20
 (94,11) -> empty
 (94,12) -> empty
 (94,13) -> empty
-(94,14) -> platform
-(94,15) -> enemy
+(94,14) -> empty
+(94,15) -> empty
 (95,0) -> empty
 (95,1) -> empty
 (95,2) -> empty
 (95,3) -> empty
 (95,4) -> empty
-(95,5) -> empty
-(95,6) -> empty
+(95,5) -> platform
+(95,6) -> enemy
 (95,7) -> empty
 (95,8) -> empty
 (95,9) -> empty
@@ -1555,7 +1555,7 @@ enemy 20
 (96,2) -> empty
 (96,3) -> empty
 (96,4) -> empty
-(96,5) -> empty
+(96,5) -> platform
 (96,6) -> empty
 (96,7) -> empty
 (96,8) -> empty
@@ -1564,8 +1564,8 @@ enemy 20
 (96,11) -> empty
 (96,12) -> empty
 (96,13) -> empty
-(96,14) -> platform
-(96,15) -> obstacle
+(96,14) -> empty
+(96,15) -> empty
 (97,0) -> empty
 (97,1) -> empty
 (97,2) -> empty
@@ -1586,8 +1586,8 @@ enemy 20
 (98,1) -> empty
 (98,2) -> empty
 (98,3) -> empty
-(98,4) -> empty
-(98,5) -> empty
+(98,4) -> platform
+(98,5) -> obstacle
 (98,6) -> empty
 (98,7) -> empty
 (98,8) -> empty
@@ -1596,14 +1596,14 @@ enemy 20
 (98,11) -> empty
 (98,12) -> empty
 (98,13) -> empty
-(98,14) -> platform
+(98,14) -> empty
 (98,15) -> empty
 (99,0) -> empty
 (99,1) -> empty
 (99,2) -> empty
 (99,3) -> empty
 (99,4) -> empty
-(99,5) -> empty
+(99,5) -> platform
 (99,6) -> empty
 (99,7) -> empty
 (99,8) -> empty
@@ -1628,7 +1628,7 @@ enemy 20
 (100,11) -> empty
 (100,12) -> empty
 (100,13) -> empty
-(100,14) -> platform
+(100,14) -> empty
 (100,15) -> empty
 (101,0) -> empty
 (101,1) -> empty
@@ -1637,7 +1637,7 @@ enemy 20
 (101,4) -> empty
 (101,5) -> empty
 (101,6) -> empty
-(101,7) -> empty
+(101,7) -> platform
 (101,8) -> empty
 (101,9) -> empty
 (101,10) -> empty
@@ -1653,15 +1653,15 @@ enemy 20
 (102,4) -> empty
 (102,5) -> empty
 (102,6) -> empty
-(102,7) -> empty
+(102,7) -> platform
 (102,8) -> empty
 (102,9) -> empty
 (102,10) -> empty
 (102,11) -> empty
 (102,12) -> empty
 (102,13) -> empty
-(102,14) -> platform
-(102,15) -> enemy
+(102,14) -> empty
+(102,15) -> empty
 (103,0) -> empty
 (103,1) -> empty
 (103,2) -> empty
@@ -1683,7 +1683,7 @@ enemy 20
 (104,2) -> empty
 (104,3) -> empty
 (104,4) -> empty
-(104,5) -> empty
+(104,5) -> platform
 (104,6) -> empty
 (104,7) -> empty
 (104,8) -> empty
@@ -1701,15 +1701,15 @@ enemy 20
 (105,4) -> empty
 (105,5) -> empty
 (105,6) -> empty
-(105,7) -> empty
-(105,8) -> empty
+(105,7) -> platform
+(105,8) -> enemy
 (105,9) -> empty
 (105,10) -> empty
 (105,11) -> empty
 (105,12) -> empty
 (105,13) -> empty
-(105,14) -> platform
-(105,15) -> obstacle
+(105,14) -> empty
+(105,15) -> empty
 (106,0) -> empty
 (106,1) -> empty
 (106,2) -> empty
@@ -1731,7 +1731,7 @@ enemy 20
 (107,2) -> empty
 (107,3) -> empty
 (107,4) -> empty
-(107,5) -> empty
+(107,5) -> platform
 (107,6) -> empty
 (107,7) -> empty
 (107,8) -> empty
@@ -1740,13 +1740,13 @@ enemy 20
 (107,11) -> empty
 (107,12) -> empty
 (107,13) -> empty
-(107,14) -> platform
+(107,14) -> empty
 (107,15) -> empty
 (108,0) -> empty
 (108,1) -> empty
 (108,2) -> empty
 (108,3) -> empty
-(108,4) -> empty
+(108,4) -> platform
 (108,5) -> empty
 (108,6) -> empty
 (108,7) -> empty
@@ -1772,14 +1772,14 @@ enemy 20
 (109,11) -> empty
 (109,12) -> empty
 (109,13) -> empty
-(109,14) -> platform
-(109,15) -> enemy
+(109,14) -> empty
+(109,15) -> empty
 (110,0) -> empty
 (110,1) -> empty
 (110,2) -> empty
 (110,3) -> empty
 (110,4) -> empty
-(110,5) -> empty
+(110,5) -> platform
 (110,6) -> empty
 (110,7) -> empty
 (110,8) -> empty
@@ -1797,14 +1797,14 @@ enemy 20
 (111,4) -> empty
 (111,5) -> empty
 (111,6) -> empty
-(111,7) -> empty
+(111,7) -> platform
 (111,8) -> empty
 (111,9) -> empty
 (111,10) -> empty
 (111,11) -> empty
 (111,12) -> empty
 (111,13) -> empty
-(111,14) -> platform
+(111,14) -> empty
 (111,15) -> empty
 (112,0) -> empty
 (112,1) -> empty
@@ -1829,10 +1829,10 @@ enemy 20
 (113,4) -> empty
 (113,5) -> empty
 (113,6) -> empty
-(113,7) -> empty
-(113,8) -> empty
+(113,7) -> platform
+(113,8) -> obstacle
 (113,9) -> empty
-(113,10) -> platform
+(113,10) -> empty
 (113,11) -> empty
 (113,12) -> empty
 (113,13) -> empty
@@ -1843,8 +1843,8 @@ enemy 20
 (114,2) -> empty
 (114,3) -> empty
 (114,4) -> empty
-(114,5) -> empty
-(114,6) -> platform
+(114,5) -> platform
+(114,6) -> empty
 (114,7) -> empty
 (114,8) -> empty
 (114,9) -> empty
@@ -1875,7 +1875,7 @@ enemy 20
 (116,2) -> empty
 (116,3) -> empty
 (116,4) -> platform
-(116,5) -> obstacle
+(116,5) -> enemy
 (116,6) -> empty
 (116,7) -> empty
 (116,8) -> empty
@@ -1891,7 +1891,7 @@ enemy 20
 (117,2) -> empty
 (117,3) -> empty
 (117,4) -> empty
-(117,5) -> empty
+(117,5) -> platform
 (117,6) -> empty
 (117,7) -> empty
 (117,8) -> empty
@@ -1910,8 +1910,8 @@ enemy 20
 (118,5) -> empty
 (118,6) -> empty
 (118,7) -> empty
-(118,8) -> platform
-(118,9) -> enemy
+(118,8) -> empty
+(118,9) -> empty
 (118,10) -> empty
 (118,11) -> empty
 (118,12) -> empty
@@ -1925,7 +1925,7 @@ enemy 20
 (119,4) -> empty
 (119,5) -> empty
 (119,6) -> empty
-(119,7) -> empty
+(119,7) -> platform
 (119,8) -> empty
 (119,9) -> empty
 (119,10) -> empty
@@ -1973,7 +1973,7 @@ enemy 20
 (122,4) -> empty
 (122,5) -> empty
 (122,6) -> empty
-(122,7) -> empty
+(122,7) -> platform
 (122,8) -> empty
 (122,9) -> empty
 (122,10) -> empty
@@ -1987,10 +1987,10 @@ enemy 20
 (123,2) -> empty
 (123,3) -> empty
 (123,4) -> empty
-(123,5) -> empty
+(123,5) -> platform
 (123,6) -> empty
-(123,7) -> platform
-(123,8) -> enemy
+(123,7) -> empty
+(123,8) -> empty
 (123,9) -> empty
 (123,10) -> empty
 (123,11) -> empty
@@ -2005,7 +2005,7 @@ enemy 20
 (124,4) -> empty
 (124,5) -> empty
 (124,6) -> empty
-(124,7) -> platform
+(124,7) -> empty
 (124,8) -> empty
 (124,9) -> empty
 (124,10) -> empty
@@ -2019,8 +2019,8 @@ enemy 20
 (125,2) -> empty
 (125,3) -> empty
 (125,4) -> empty
-(125,5) -> empty
-(125,6) -> empty
+(125,5) -> platform
+(125,6) -> enemy
 (125,7) -> empty
 (125,8) -> empty
 (125,9) -> empty
@@ -2034,11 +2034,11 @@ enemy 20
 (126,1) -> empty
 (126,2) -> empty
 (126,3) -> empty
-(126,4) -> empty
+(126,4) -> platform
 (126,5) -> empty
 (126,6) -> empty
-(126,7) -> platform
-(126,8) -> obstacle
+(126,7) -> empty
+(126,8) -> empty
 (126,9) -> empty
 (126,10) -> empty
 (126,11) -> empty
@@ -2067,9 +2067,9 @@ enemy 20
 (128,2) -> empty
 (128,3) -> empty
 (128,4) -> empty
-(128,5) -> empty
-(128,6) -> empty
-(128,7) -> platform
+(128,5) -> platform
+(128,6) -> obstacle
+(128,7) -> empty
 (128,8) -> empty
 (128,9) -> empty
 (128,10) -> empty
@@ -2085,7 +2085,7 @@ enemy 20
 (129,4) -> empty
 (129,5) -> empty
 (129,6) -> empty
-(129,7) -> empty
+(129,7) -> platform
 (129,8) -> empty
 (129,9) -> empty
 (129,10) -> empty
@@ -2101,7 +2101,7 @@ enemy 20
 (130,4) -> empty
 (130,5) -> empty
 (130,6) -> empty
-(130,7) -> platform
+(130,7) -> empty
 (130,8) -> empty
 (130,9) -> empty
 (130,10) -> empty
@@ -2117,7 +2117,7 @@ enemy 20
 (131,4) -> empty
 (131,5) -> empty
 (131,6) -> empty
-(131,7) -> empty
+(131,7) -> platform
 (131,8) -> empty
 (131,9) -> empty
 (131,10) -> empty
@@ -2134,7 +2134,7 @@ enemy 20
 (132,5) -> empty
 (132,6) -> empty
 (132,7) -> platform
-(132,8) -> enemy
+(132,8) -> empty
 (132,9) -> empty
 (132,10) -> empty
 (132,11) -> empty
@@ -2163,8 +2163,8 @@ enemy 20
 (134,2) -> empty
 (134,3) -> empty
 (134,4) -> empty
-(134,5) -> empty
-(134,6) -> platform
+(134,5) -> platform
+(134,6) -> empty
 (134,7) -> empty
 (134,8) -> empty
 (134,9) -> empty
@@ -2178,8 +2178,8 @@ enemy 20
 (135,1) -> empty
 (135,2) -> empty
 (135,3) -> empty
-(135,4) -> empty
-(135,5) -> empty
+(135,4) -> platform
+(135,5) -> enemy
 (135,6) -> empty
 (135,7) -> empty
 (135,8) -> empty
@@ -2196,8 +2196,8 @@ enemy 20
 (136,3) -> empty
 (136,4) -> empty
 (136,5) -> empty
-(136,6) -> platform
-(136,7) -> obstacle
+(136,6) -> empty
+(136,7) -> empty
 (136,8) -> empty
 (136,9) -> empty
 (136,10) -> empty
@@ -2211,7 +2211,7 @@ enemy 20
 (137,2) -> empty
 (137,3) -> empty
 (137,4) -> empty
-(137,5) -> empty
+(137,5) -> platform
 (137,6) -> empty
 (137,7) -> empty
 (137,8) -> empty
@@ -2228,8 +2228,8 @@ enemy 20
 (138,3) -> empty
 (138,4) -> empty
 (138,5) -> empty
-(138,6) -> platform
-(138,7) -> enemy
+(138,6) -> empty
+(138,7) -> platform
 (138,8) -> empty
 (138,9) -> empty
 (138,10) -> empty
@@ -2259,9 +2259,9 @@ enemy 20
 (140,2) -> empty
 (140,3) -> empty
 (140,4) -> empty
-(140,5) -> platform
+(140,5) -> empty
 (140,6) -> empty
-(140,7) -> empty
+(140,7) -> platform
 (140,8) -> empty
 (140,9) -> empty
 (140,10) -> empty
@@ -2277,7 +2277,7 @@ enemy 20
 (141,4) -> empty
 (141,5) -> empty
 (141,6) -> empty
-(141,7) -> empty
+(141,7) -> platform
 (141,8) -> empty
 (141,9) -> empty
 (141,10) -> empty
@@ -2308,7 +2308,7 @@ enemy 20
 (143,3) -> empty
 (143,4) -> empty
 (143,5) -> platform
-(143,6) -> empty
+(143,6) -> obstacle
 (143,7) -> empty
 (143,8) -> empty
 (143,9) -> empty
@@ -2322,10 +2322,10 @@ enemy 20
 (144,1) -> empty
 (144,2) -> empty
 (144,3) -> empty
-(144,4) -> platform
+(144,4) -> empty
 (144,5) -> empty
 (144,6) -> empty
-(144,7) -> empty
+(144,7) -> platform
 (144,8) -> empty
 (144,9) -> empty
 (144,10) -> empty
@@ -2354,9 +2354,9 @@ enemy 20
 (146,1) -> empty
 (146,2) -> empty
 (146,3) -> empty
-(146,4) -> platform
-(146,5) -> obstacle
-(146,6) -> empty
+(146,4) -> empty
+(146,5) -> platform
+(146,6) -> enemy
 (146,7) -> empty
 (146,8) -> empty
 (146,9) -> empty
@@ -2370,7 +2370,7 @@ enemy 20
 (147,1) -> empty
 (147,2) -> empty
 (147,3) -> empty
-(147,4) -> empty
+(147,4) -> platform
 (147,5) -> empty
 (147,6) -> empty
 (147,7) -> empty
@@ -2385,8 +2385,8 @@ enemy 20
 (148,0) -> empty
 (148,1) -> empty
 (148,2) -> empty
-(148,3) -> platform
-(148,4) -> enemy
+(148,3) -> empty
+(148,4) -> empty
 (148,5) -> empty
 (148,6) -> empty
 (148,7) -> empty
@@ -2403,7 +2403,7 @@ enemy 20
 (149,2) -> empty
 (149,3) -> empty
 (149,4) -> empty
-(149,5) -> empty
+(149,5) -> platform
 (149,6) -> empty
 (149,7) -> empty
 (149,8) -> empty
