@@ -4,7 +4,7 @@
 using namespace std;
 
 enum Type { EMPTY = 0, PLATFORM = 1, OBSTACLE = 2, ENEMY = 3 };
-const int NTYPES = 4;   // incluye EMPTY
+const int NTYPES = 4;
 
 struct Params {
     // Parametros del salto maximo
@@ -32,7 +32,7 @@ struct Level {
 // Cuenta cuantos objetos hay del tipo k
 int countObjects(const Level& n, int k);
 
-// Linealidad (como Launchpad): ajusta una recta a las plataformas y mide
+// Linealidad: ajusta una recta a las plataformas y mide
 // la distancia promedio a ella. Entre 0 y 1, 1 = las plataformas siguen una recta
 double linearity(const Level& n);
 
@@ -51,9 +51,17 @@ double jumpHeight(const Params& P, int dx);
 // true si el salto (dx, dy) es alcanzable, es decir, (dx, dy) pertenece a R
 bool canJump(const Params& P, int dx, int dy);
 
-// Revisa las restricciones R1-R5 en las columnas 0..lastCol.
-// lastCol = -1 (por defecto) revisa el nivel completo
-bool isFeasible(const Level& n, const Params& P, int lastCol = -1);
+// Revisa las restricciones en una ventana de columnas
+// Sin argumentos revisa el nivel completo.
+// Greedy: isFeasible(level, P, i)            -> columnas 0..i
+// Hill Climbing: isFeasible(level, P, n, p)  -> ventana p..n
+bool isFeasible(const Level& n, const Params& P, int lastCol = -1, int firstCol = 0);
+
+// Pone una plataforma en (i, j) y, si se pide, un objeto encima (fila j+1)
+void place(Level& level, int i, int j, int on_top);
+
+// Deja la columna i vacia
+void clearColumn(Level& level, int i);
 
 // Guarda el nivel en un txt (parametros arriba, casillas abajo)
 void saveLevel(const Level& n, const Params& P, const string& path);
