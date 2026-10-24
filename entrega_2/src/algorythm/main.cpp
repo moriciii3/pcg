@@ -16,27 +16,41 @@ int main() {
     P.target_count[OBSTACLE] = 10;
     P.target_count[ENEMY]    = 15;
 
-    // Funcion objetivo: Z = alpha * D + beta * T   (alpha + beta = 1)
+    // Funcion objetivo: Z = alpha * D + beta * |L - L_target|   (alpha + beta = 1)
     P.alpha = 0.7;                // 70% importan las cantidades
-    P.beta  = 0.3;                // 30% importa la forma del nivel
-    P.L_target = 0.85;            // alta linealidad (1 = recta, 0.5 = sube y baja mucho)
+    P.beta  = 0.3;                // 30% importa la linealidad
+    P.L_target = 0.67;            // linealidad buscada (1 = recta, 0.5 = sube y baja mucho)
 
-    // Crear la carpeta out/ si no existe
     filesystem::create_directories("out");
 
-    // Probar el greedy con un punto inicial
-    int start = 5;
-    Level level = greedy(P, start);
+    // Reinicios: greedy + Hill Climbing desde cada punto inicial, se guarda el mejor
+    Level best(P.W, P.H);
+    double bestCost = 1e18;
 
-    string path = "../out/greedy_alta_linealidad.txt";
-    saveLevel(level, P, path);
+    for (int start = 0; start <= P.H - 2; start++) {
+        Level greedySol = greedy(P, start);
+        Level hcSol     = hillClimbing(greedySol, P);
 
-    cout << "Factible    = " << (isFeasible(level, P) ? "si" : "no") << "\n";
-    cout << "Z           = " << evaluate(level, P) << "\n";
-    cout << "Linealidad  = " << linearity(level) << "\n";
-    cout << "Plataformas = " << countObjects(level, PLATFORM) << " / " << P.target_count[PLATFORM] << "\n";
-    cout << "Obstaculos  = " << countObjects(level, OBSTACLE) << " / " << P.target_count[OBSTACLE] << "\n";
-    cout << "Enemigos    = " << countObjects(level, ENEMY)    << " / " << P.target_count[ENEMY]    << "\n";
+        double zGreedy = evaluate(greedySol, P);
+        double zHC     = evaluate(hcSol, P);
+        printf("start=%2d   Z greedy=%.5f   Z HC=%.5f   factible=%s\n",
+               start, zGreedy, zHC, isFeasible(hcSol, P) ? "si" : "no");
+
+        if (isFeasible(hcSol, P) && zHC < bestCost) {
+            bestCost = zHC;
+            best = hcSol;
+        }
+    }
+
+    // Mejor solucion
+    string path = "../out/mejor_solucion.txt";
+    saveLevel(best, P, path);
+
+    cout << "\nMejor Z     = " << bestCost << "\n";
+    cout << "Linealidad  = " << linearity(best) << "\n";
+    cout << "Plataformas = " << countObjects(best, PLATFORM) << " / " << P.target_count[PLATFORM] << "\n";
+    cout << "Obstaculos  = " << countObjects(best, OBSTACLE) << " / " << P.target_count[OBSTACLE] << "\n";
+    cout << "Enemigos    = " << countObjects(best, ENEMY)    << " / " << P.target_count[ENEMY]    << "\n";
     cout << "Guardado en " << path << "\n";
 
     return 0;
