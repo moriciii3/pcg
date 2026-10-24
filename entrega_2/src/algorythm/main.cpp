@@ -25,6 +25,7 @@ int main() {
 
     // Reinicios: greedy + Hill Climbing desde cada punto inicial, se guarda el mejor
     Level best(P.W, P.H);
+    Level bestGSol(P.W, P.H);
     double bestCost = 1e18;
 
     for (int start = 0; start <= P.H - 2; start++) {
@@ -39,19 +40,32 @@ int main() {
         if (isFeasible(hcSol, P) && zHC < bestCost) {
             bestCost = zHC;
             best = hcSol;
+            bestGSol = greedySol; // Almacenamos la solucion greedy correspondiente
         }
     }
 
     // Mejor solucion
-    string path = "../out/mejor_solucion.txt";
-    saveLevel(best, P, path);
+    string path_hc = "../out/best_sol_hc.txt";
+    string path_greedy = "../out/best_sol_greedy.txt";
+    saveLevel(best, P, path_hc);
+    saveLevel(bestGSol, P, path_greedy);
 
-    cout << "\nMejor Z     = " << bestCost << "\n";
-    cout << "Linealidad  = " << linearity(best) << "\n";
+    // Comparacion greedy vs HC de la mejor solucion
+    double zGreedyBest = evaluate(bestGSol, P);
+    double zHCBest     = bestCost;
+
+    cout << "\n--- Mejor solucion ---\n";
+    cout << "Z greedy    = " << zGreedyBest << "\n";
+    cout << "Z HC        = " << zHCBest << "\n";
+    if (zGreedyBest > 0)
+        cout << "Mejora      = " << 100.0 * (zGreedyBest - zHCBest) / zGreedyBest << " %\n";
+
+    cout << "\nLinealidad  = " << linearity(best) << "  (pedida " << P.L_target << ")\n";
     cout << "Plataformas = " << countObjects(best, PLATFORM) << " / " << P.target_count[PLATFORM] << "\n";
     cout << "Obstaculos  = " << countObjects(best, OBSTACLE) << " / " << P.target_count[OBSTACLE] << "\n";
     cout << "Enemigos    = " << countObjects(best, ENEMY)    << " / " << P.target_count[ENEMY]    << "\n";
-    cout << "Guardado en " << path << "\n";
+    cout << "HC guardado en "     << path_hc     << "\n";
+    cout << "Greedy guardado en " << path_greedy << "\n";
 
     return 0;
 }
