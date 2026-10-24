@@ -2,9 +2,8 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-// Funcion miope: costo del nivel construido hasta la columna i.
-// Compara lo colocado con lo que "deberia" llevar segun el avance.
-// costo = alpha * sum_k |o_k - O_k * avance| / sum_k O_k + beta * |L - L_target|
+// Funcion miope: Devuelve lo mismo que la funcion de evaluacion, pero ahora se exige un determinado porcentaje de objetos
+// Si va en un 25% del nivel, le solicito el 25% de plataformas de las que se pidieron, y con eso calculo la f(x) de evaluaciónS.
 static double myopicCost(const Level& level, const Params& P, int i) {
     double progress = (double)(i + 1) / P.W;
     double D = 0.0;
@@ -12,18 +11,6 @@ static double myopicCost(const Level& level, const Params& P, int i) {
         D += abs(countObjects(level, k) - P.target_count[k] * progress);
     D /= totalTarget(P);
     return P.alpha * D + P.beta * heightTerm(level, P);
-}
-
-// Pone una plataforma en (i, j) y, si se pide, un objeto encima (fila j+1).
-// on_top = EMPTY si no va nada encima
-static void place(Level& level, int i, int j, int on_top) {
-    level.cells[i][j] = PLATFORM;
-    if (on_top != EMPTY && j + 1 < level.H) level.cells[i][j + 1] = on_top;
-}
-
-// Deja la columna i vacia (sirve para deshacer una prueba)
-static void clearColumn(Level& level, int i) {
-    for (int j = 0; j < level.H; j++) level.cells[i][j] = EMPTY;
 }
 
 // Greedy constructivo, de izquierda a derecha.
