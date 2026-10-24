@@ -6,20 +6,20 @@ using namespace std;
 int main() {
     // Definicion de parametros
     Params P;
-    P.max_x_jump = 6;
-    P.max_y_jump = 4;
-    P.W = 150;
+    P.max_x_jump = 5;
+    P.max_y_jump = 1;
+    P.W = 100;
     P.H = 16;
 
     P.target_count[EMPTY]    = 0;     // no se usa
-    P.target_count[PLATFORM] = 100;
-    P.target_count[OBSTACLE] = 10;
+    P.target_count[PLATFORM] = 75;
     P.target_count[ENEMY]    = 15;
+    P.target_count[OBSTACLE] = 35;
 
     // Funcion objetivo: Z = alpha * D + beta * |L - L_target|   (alpha + beta = 1)
     P.alpha = 0.7;                // 70% importan las cantidades
     P.beta  = 0.3;                // 30% importa la linealidad
-    P.L_target = 0.67;            // linealidad buscada (1 = recta, 0.5 = sube y baja mucho)
+    P.L_target = 0.5;            // linealidad buscada (1 = recta, 0.5 = sube y baja mucho)
 
     filesystem::create_directories("out");
 
@@ -45,8 +45,8 @@ int main() {
     }
 
     // Mejor solucion
-    string path_hc = "../out/best_sol_hc.txt";
-    string path_greedy = "../out/best_sol_greedy.txt";
+    string path_hc = "../out/instancia5_hc.txt";
+    string path_greedy = "../out/instancia5_greedy.txt";
     saveLevel(best, P, path_hc);
     saveLevel(bestGSol, P, path_greedy);
 
