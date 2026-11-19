@@ -3,25 +3,64 @@
 #include <filesystem>
 using namespace std;
 
-int main() {
-    // Definicion de parametros
-    Params P;
-    P.max_x_jump = 5;
-    P.max_y_jump = 1;
-    P.W = 100;
-    P.H = 16;
+// Lee una instancia desde un archivo con lineas "nombre valor".
+// Las lineas vacias o que empiezan con # se ignoran.
+// Devuelve false si el archivo no existe o falta algun parametro.
+bool readInstance(const string& path, Params& P) {
+    ifstream f(path);
+    if (!f) {
+        cerr << "No se pudo abrir la instancia: " << path << "\n";
+        return false;
+    }
+
+    map<string, double> values;
+    string line;
+    while (getline(f, line)) {
+        if (line.empty() || line[0] == '#') continue;
+        stringstream ss(line);
+        string key;
+        double value;
+        if (ss >> key >> value) values[key] = value;
+    }
+
+    // Parametros obligatorios
+    vector<string> required = {"W", "H", "max_x_jump", "max_y_jump",
+                               "platforms", "enemies", "obstacles",
+                               "alpha", "beta", "L_target"};
+    for (const string& key : required) {
+        if (!values.count(key)) {
+            cerr << "Falta el parametro '" << key << "' en " << path << "\n";
+            return false;
+        }
+    }
+
+    P.W          = (int)values["W"];
+    P.H          = (int)values["H"];
+    P.max_x_jump = (int)values["max_x_jump"];
+    P.max_y_jump = (int)values["max_y_jump"];
 
     P.target_count[EMPTY]    = 0;     // no se usa
-    P.target_count[PLATFORM] = 75;
-    P.target_count[ENEMY]    = 15;
-    P.target_count[OBSTACLE] = 35;
+    P.target_count[PLATFORM] = (int)values["platforms"];
+    P.target_count[ENEMY]    = (int)values["enemies"];
+    P.target_count[OBSTACLE] = (int)values["obstacles"];
 
-    // Funcion objetivo: Z = alpha * D + beta * |L - L_target|   (alpha + beta = 1)
-    P.alpha = 0.7;                // 70% importan las cantidades
-    P.beta  = 0.3;                // 30% importa la linealidad
-    P.L_target = 0.5;            // linealidad buscada (1 = recta, 0.5 = sube y baja mucho)
+    P.alpha    = values["alpha"];
+    P.beta     = values["beta"];
+    P.L_target = values["L_target"];
+    return true;
+}
 
-    filesystem::create_directories("out");
+int main(int argc, char* argv[]) {
+    string instancePath = (argc > 1) ? argv[1] : "../instances/inst1.txt";
+
+    Params P;
+    if (!readInstance(instancePath, P)) return 1;
+
+    // Nombre de la instancia (sin carpeta ni extension), para los archivos de salida
+    string instanceName = filesystem::path(instancePath).stem().string();
+    cout << "Instancia: " << instanceName << " (" << instancePath << ")\n\n";
+
+    filesystem::create_directories("../out");
 
     // Reinicios: greedy + Hill Climbing desde cada punto inicial, se guarda el mejor
     Level best(P.W, P.H);
@@ -45,8 +84,8 @@ int main() {
     }
 
     // Mejor solucion
-    string path_hc = "../out/instancia5_hc.txt";
-    string path_greedy = "../out/instancia5_greedy.txt";
+    string path_hc     = "../out/" + instanceName + "_hc.txt";
+    string path_greedy = "../out/" + instanceName + "_greedy.txt";
     saveLevel(best, P, path_hc);
     saveLevel(bestGSol, P, path_greedy);
 

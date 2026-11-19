@@ -1,0 +1,68 @@
+# Entrega final - Generación Procedural de Plataformas
+Bruno Morici
+ROL 202373555-8
+
+## Correcciones sobre entrega anterior
+### 1. Intersección en saltos
+En la entrega anterior, se generaban *falsos positivos* en los saltos. Si un salto era posible, pero había un obstáculo en la trayectoria de ese salto, el algoritmo lo consideraba como un salto válido.
+
+Esto se solucionó revisando la trayectoria completa del salto, y no solo el punto de llegada. El salto se recorre en pasos pequeños, columna por columna, y cada casilla por la que pasa el avatar debe estar vacía hasta tocar la plataforma de llegada. Si la trayectoria choca con una plataforma, un obstáculo o un enemigo antes de aterrizar, el salto se descarta.
+
+Además, en vez de usar una sola parábola, se considera una familia de saltos con distintas alturas y largos (desde dejarse caer hasta el salto máximo). Un salto se considera válido si al menos una de estas trayectorias llega sin chocar, lo que también evita falsos negativos: saltos que se rechazaban con la parábola máxima, pero que un salto más corto o más bajo sí logra.
+
+### 2. Saltos fuera del mapa
+En la entrega anterior, las plataformas no podían ubicarse en la fila más alta del mapa, y la trayectoria de los saltos no consideraba el borde superior, por lo que el jugador podía saltar fuera del mapa.
+
+Esto se solucionó permitiendo plataformas hasta la fila 16 y considerando filas vacías por encima del mapa al revisar los saltos. Estas filas no se agregan al nivel generado, que sigue teniendo 16 filas: solo se usan para que el avatar tenga espacio al saltar desde las plataformas más altas.
+
+Como el avatar sube como máximo `salto_maximo_y` casillas sobre su plataforma, basta con considerar:
+
+altura_considerada = altura_mapa + salto_maximo_y
+
+Por ejemplo, si el mapa tiene 16 de altura y el salto máximo es de 4, los saltos se revisan con 20 filas, pero el nivel se genera y se guarda con 16.
+
+## Cómo ejecutarlo
+
+### 1. Definir instancia
+En la carpeta `src/instances/` se crean archivos `.txt` que definen los parámetros de la instancia a generar. Por ejemplo, el archivo `inst1.txt` contiene:
+
+```
+# Mapa
+W 150
+H 16
+
+# Salto
+max_x_jump 6
+max_y_jump 4
+
+# Cantidades pedidas
+platforms 75
+enemies 20
+obstacles 15
+
+# Funcion objetivo
+alpha 0.7
+beta 0.3
+L_target 0.86
+```
+
+Definir la instancia y luego ejecutar el algoritmo.
+
+### 2. Compilar
+Entrar a la carpeta `src/algorythm` y ejecutar, se debe utilizar la instancia definida anteriormente (como ejemplo de usa `inst1.txt`):
+
+```bash
+g++ -O2 -std=c++17 level.cpp greedy.cpp main.cpp hill_climbing.cpp -o pcg
+./pcg ../instances/inst1.txt
+```
+
+Esto genera un mapa en formato `.txt` en la carpeta `src/out`.
+
+### 3. Ejecutar imagen
+Entrar a la carpeta `src/format/` y ejecutar:
+
+```bash
+python3 main.py
+``` 
+
+Esto transforma el mapa generado en un archivo de imagen `.png` y lo guarda en la carpeta `src/out`.

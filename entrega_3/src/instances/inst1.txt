@@ -1,0 +1,17 @@
+# Mapa
+W 150
+H 16
+
+# Salto
+max_x_jump 6
+max_y_jump 4
+
+# Cantidades pedidas
+platforms 75
+enemies 20
+obstacles 15
+
+# Funcion objetivo
+alpha 0.7
+beta 0.3
+L_target 0.86
