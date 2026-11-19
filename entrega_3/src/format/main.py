@@ -21,7 +21,8 @@ from matplotlib.lines import Line2D
 TYPES = ["empty", "platform", "obstacle", "enemy"]
 COLORS = ["#f4f1ea", "#7a4b2a", "#5a8f3c", "#c0392b"]   # vacio, plataforma, obstaculo, enemigo
 LABELS = ["Vacío", "Plataforma", "Obstáculo", "Enemigo"]
-CURVE_COLOR = "#2E6FD8"
+CURVE_COLOR = "#2E6FD8"     # curva ajustada (contra la que se mide la linealidad)
+POINTS_COLOR = "#E67E22"    # puntos de la instancia y polinomio que pasa por ellos
 
 CELL = re.compile(r"\((\d+),(\d+)\)\s*->\s*(\w+)")
 
@@ -79,6 +80,13 @@ def barycentric(guide, x):
     return num / den
 
 
+def guide_curve(guide, W):
+    """Polinomio interpolador evaluado en cada columna (sin ajustar).
+    Fuera del tramo de los puntos se mantiene plano, igual que en el C++."""
+    x_min, x_max = guide[0][0], guide[-1][0]
+    return [barycentric(guide, max(x_min, min(x_max, i))) for i in range(W)]
+
+
 def fitted_curve(guide, grid, W, H):
     """Curva contra la que se mide la linealidad (igual que linearity en C++).
 
@@ -88,8 +96,7 @@ def fitted_curve(guide, grid, W, H):
     """
     has_guide = len(guide) >= 2
     if has_guide:
-        x_min, x_max = guide[0][0], guide[-1][0]
-        g = [barycentric(guide, max(x_min, min(x_max, i))) for i in range(W)]
+        g = guide_curve(guide, W)
     else:
         g = [float(i) for i in range(W)]
 
@@ -123,11 +130,28 @@ def plot_level(path):
     ax.imshow(grid, cmap=ListedColormap(COLORS), vmin=0, vmax=len(TYPES) - 1,
               origin="lower", interpolation="nearest")
 
-    # Curva guia ajustada (o recta ajustada, si la instancia no tiene puntos)
+    # Polinomio interpolador original con los puntos de la instancia:
+    # muestra que la curva pasa exactamente por cada punto
+    if len(guide) >= 2:
+        xs_fine = [k / 10 for k in range(int((W - 1) * 10) + 1)]
+        x_min, x_max = guide[0][0], guide[-1][0]
+        ys_fine = [barycentric(guide, max(x_min, min(x_max, x))) for x in xs_fine]
+        ax.plot(xs_fine, ys_fine, color=POINTS_COLOR, linewidth=1.2, linestyle=":")
+        ax.plot([x for x, _ in guide], [y for _, y in guide], "o", color=POINTS_COLOR,
+                markersize=6, markeredgecolor="white", markeredgewidth=0.8, zorder=5)
+
+    # Curva guia ajustada (o recta ajustada, si la instancia no tiene puntos):
+    # es contra la que se mide la linealidad
     curve = fitted_curve(guide, grid, W, H)
     if curve:
         ax.plot(range(W), curve, color=CURVE_COLOR, linewidth=1.5, linestyle="--")
-    ax.set_ylim(-0.5, H - 0.5)
+
+    # Alto visible: el mapa, ampliado si algun punto de la instancia queda fuera
+    y_low, y_high = -0.5, H - 0.5
+    if guide:
+        y_low = min(y_low, min(y for _, y in guide) - 0.5)
+        y_high = max(y_high, max(y for _, y in guide) + 0.5)
+    ax.set_ylim(y_low, y_high)
 
     # Grilla suave entre casillas
     ax.set_xticks([x - 0.5 for x in range(W + 1)], minor=True)
@@ -149,6 +173,9 @@ def plot_level(path):
     ax.set_title(title, fontsize=9)
 
     legend = [Patch(color=c, label=l) for c, l in zip(COLORS, LABELS)]
+    if len(guide) >= 2:
+        legend.append(Line2D([0], [0], color=POINTS_COLOR, linewidth=1.2, linestyle=":", marker="o",
+                             markersize=5, label="Puntos y polinomio"))
     if curve:
         label = "Curva guía ajustada" if len(guide) >= 2 else "Recta ajustada"
         legend.append(Line2D([0], [0], color=CURVE_COLOR, linewidth=1.5, linestyle="--", label=label))
