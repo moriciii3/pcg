@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 24.1) (preloaded format=pdflatex 2024.3.11)  9 OCT 2026 09:36
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 24.1) (preloaded format=pdflatex 2024.3.11)  19 NOV 2026 11:05
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -297,75 +297,72 @@ Underfull \hbox (badness 10000) in paragraph at lines 60--61
 
  []
 
-[2] [3] [4]
-Underfull \hbox (badness 10000) in paragraph at lines 137--137
+[2] [3] [4] [5]
+Underfull \hbox (badness 10000) in paragraph at lines 143--143
 []\OT1/cmr/m/n/8 Gram^^Sati-ca con
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 137--137
+Underfull \hbox (badness 10000) in paragraph at lines 143--143
 []\OT1/cmr/m/n/8 Ritmo y geo-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 137--137
+Underfull \hbox (badness 10000) in paragraph at lines 143--143
 []\OT1/cmr/m/n/8 Garantizada por
  []
 
 
-Underfull \hbox (badness 4569) in paragraph at lines 137--138
+Underfull \hbox (badness 4569) in paragraph at lines 143--144
 []\OT1/cmr/m/n/8 Cr^^S^^Pti-cos del di-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 139--139
+Underfull \hbox (badness 10000) in paragraph at lines 145--145
 []\OT1/cmr/m/n/8 Mawhorter y
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 139--139
+Underfull \hbox (badness 10000) in paragraph at lines 145--145
 []\OT1/cmr/m/n/8 Ensamblaje de
  []
 
 
-Underfull \hbox (badness 2460) in paragraph at lines 141--141
+Underfull \hbox (badness 2460) in paragraph at lines 147--147
 \OT1/cmr/m/n/8 dor y b^^Susque-da
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 141--141
+Underfull \hbox (badness 10000) in paragraph at lines 147--147
 []\OT1/cmr/m/n/8 Vector de 4
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 143--143
+Underfull \hbox (badness 10000) in paragraph at lines 149--149
 []\OT1/cmr/m/n/8 Evolutivo (FI-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 143--143
+Underfull \hbox (badness 10000) in paragraph at lines 149--149
 []\OT1/cmr/m/n/8 Verificada con
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 143--144
+Underfull \hbox (badness 10000) in paragraph at lines 149--150
 []\OT1/cmr/m/n/8 Similitud de
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 145--145
+Underfull \hbox (badness 10000) in paragraph at lines 151--151
 []\OT1/cmr/m/n/8 Satisfacci^^Son de
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 145--146
+Underfull \hbox (badness 10000) in paragraph at lines 151--152
 []\OT1/cmr/m/n/8 Distribuci^^Son de
  []
 
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-[5] [6] [7] [8] [9] (MoriciB202373555.bbl) [10] (MoriciB202373555.aux
+[6] [7] [8] [9] (MoriciB202373555.bbl [10]) [11] (MoriciB202373555.aux
 LaTeX Info: Redefining \. on input line 10.
 LaTeX Info: Redefining \% on input line 10.
 )
@@ -376,12 +373,12 @@ L3 programming layer <2024-01-04>
  ) 
 Here is how much of TeX's memory you used:
  3879 strings out of 474485
- 62992 string characters out of 5743734
- 1942542 words of memory out of 5000000
+ 63172 string characters out of 5743734
+ 1941542 words of memory out of 5000000
  26131 multiletter control sequences out of 15000+600000
  567362 words of font info for 72 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 57i,11n,65p,1001b,365s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 57i,11n,65p,1320b,365s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <C:/Users/Bruno/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/
 cmbx10.pfb><C:/Users/Bruno/AppData/Local/Programs/MiKTeX/fonts/type1/public/ams
 fonts/cm/cmbx12.pfb><C:/Users/Bruno/AppData/Local/Programs/MiKTeX/fonts/type1/p
@@ -404,9 +401,9 @@ cal/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti10.pfb><C:/Users/Bruno/A
 ppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt10.pfb><C:/User
 s/Bruno/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/symbols/msbm1
 0.pfb>
-Output written on MoriciB202373555.pdf (10 pages, 297477 bytes).
+Output written on MoriciB202373555.pdf (11 pages, 300943 bytes).
 PDF statistics:
- 130 PDF objects out of 1000 (max. 8388607)
+ 133 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 
