@@ -21,6 +21,15 @@ altura_considerada = altura_mapa + salto_maximo_y
 
 Por ejemplo, si el mapa tiene 16 de altura y el salto máximo es de 4, los saltos se revisan con 20 filas, pero el nivel se genera y se guarda con 16.
 
+### 3. Curva guía
+(Estoy orgulloso de esto)
+
+Se implementó una curva de guía que permite al diseñador darle una forma establecida al nivel.
+
+El diseñador define una *serie de puntos*, estos puntos deben ir separados en el eje X, es decir, no pueden haber puntos encima de otros. Luego a los puntos se les realiza una *interpolación baricéntrica* y se obtiene un polinomio que define la curva. (Función liviana, continua y derivable).
+
+Finalmente, hay un parámetro llamado `L_target` que define qué tan cerca el nivel debe estar de la curva guía. Se calcula la diferencia entre un punto a colocar con la curva mediante *mínimos cuadrados*, y se penaliza la diferencia. Esto permite que el nivel generado tenga una forma establecida por el diseñador, pero sin ser demasiado rígido.
+
 ## Cómo ejecutarlo
 
 ### 1. Definir instancia

@@ -5,7 +5,10 @@ using namespace std;
 
 // Lee una instancia desde un archivo con lineas "nombre valor".
 // Las lineas vacias o que empiezan con # se ignoran.
-// Devuelve false si el archivo no existe o falta algun parametro.
+// Los puntos de la curva guia van uno por linea: "x 10 y 4" (x = columna, y = fila).
+// Con 2 puntos (o ninguno) la curva es una recta y la linealidad es la de siempre.
+// La semilla va como "seed 42" (si no esta, se usa 1).
+// Devuelve false si el archivo no existe o falta algun parametro obligatorio.
 bool readInstance(const string& path, Params& P) {
     ifstream f(path);
     if (!f) {
@@ -14,13 +17,23 @@ bool readInstance(const string& path, Params& P) {
     }
 
     map<string, double> values;
+    P.guide.clear();
     string line;
     while (getline(f, line)) {
         if (line.empty() || line[0] == '#') continue;
         stringstream ss(line);
         string key;
+        if (!(ss >> key)) continue;
+
+        if (key == "x") {
+            double x, y;
+            string yKey;
+            if (ss >> x >> yKey >> y && yKey == "y") P.guide.push_back({x, y});
+            else cerr << "Punto mal escrito (se esperaba \"x <columna> y <fila>\"): " << line << "\n";
+            continue;
+        }
         double value;
-        if (ss >> key >> value) values[key] = value;
+        if (ss >> value) values[key] = value;
     }
 
     // Parametros obligatorios
@@ -47,6 +60,22 @@ bool readInstance(const string& path, Params& P) {
     P.alpha    = values["alpha"];
     P.beta     = values["beta"];
     P.L_target = values["L_target"];
+
+    // Parametros opcionales (con valor por defecto)
+    P.restarts   = values.count("restarts")   ? (int)values["restarts"]   : 16;
+    P.seed       = values.count("seed")       ? (int)values["seed"]       : 1;
+
+    sort(P.guide.begin(), P.guide.end());
+    for (size_t k = 1; k < P.guide.size(); k++) {
+        if (P.guide[k].first == P.guide[k - 1].first) {
+            cerr << "La curva guia tiene dos puntos con la misma columna x = " << P.guide[k].first << "\n";
+            return false;
+        }
+    }
+    if (P.guide.size() >= 2 && (P.guide.front().first > 0 || P.guide.back().first < P.W - 1))
+        cerr << "Aviso: los puntos no cubren todo el nivel (columnas 0 a " << P.W - 1
+             << "); fuera de ellos la curva se mantiene plana.\n";
+    prepareShape(P);
     return true;
 }
 
@@ -55,26 +84,30 @@ int main(int argc, char* argv[]) {
 
     Params P;
     if (!readInstance(instancePath, P)) return 1;
+    int seed = P.seed;
+    mt19937 rng(seed);
 
-    // Nombre de la instancia (sin carpeta ni extension), para los archivos de salida
+    // Nombre de la instancia
     string instanceName = filesystem::path(instancePath).stem().string();
-    cout << "Instancia: " << instanceName << " (" << instancePath << ")\n\n";
+    cout << "Instancia: " << instanceName << " (" << instancePath << ")   semilla: " << seed << "\n\n";
 
     filesystem::create_directories("../out");
 
-    // Reinicios: greedy + Hill Climbing desde cada punto inicial, se guarda el mejor
+    // Reinicios se hacen con greedy + Hill Climbing desde un punto inicial (fila) elegido al azar.
+    // Se guarda el mejor
     Level best(P.W, P.H);
     Level bestGSol(P.W, P.H);
     double bestCost = 1e18;
 
-    for (int start = 0; start <= P.H - 2; start++) {
-        Level greedySol = greedy(P, start);
+    for (int r = 0; r < P.restarts; r++) {
+        int start = uniform_int_distribution<int>(0, P.H - 1)(rng);
+        Level greedySol = greedy(P, start, rng);
         Level hcSol     = hillClimbing(greedySol, P);
 
         double zGreedy = evaluate(greedySol, P);
         double zHC     = evaluate(hcSol, P);
-        printf("start=%2d   Z greedy=%.5f   Z HC=%.5f   factible=%s\n",
-               start, zGreedy, zHC, isFeasible(hcSol, P) ? "si" : "no");
+        printf("reinicio=%2d  start=%2d   Z greedy=%.5f   Z HC=%.5f   factible=%s\n",
+               r, start, zGreedy, zHC, isFeasible(hcSol, P) ? "si" : "no");
 
         if (isFeasible(hcSol, P) && zHC < bestCost) {
             bestCost = zHC;
@@ -84,8 +117,9 @@ int main(int argc, char* argv[]) {
     }
 
     // Mejor solucion
-    string path_hc     = "../out/" + instanceName + "_hc.txt";
-    string path_greedy = "../out/" + instanceName + "_greedy.txt";
+    string base        = "../out/" + instanceName + "_seed" + to_string(seed);
+    string path_hc     = base + "_hc.txt";
+    string path_greedy = base + "_greedy.txt";
     saveLevel(best, P, path_hc);
     saveLevel(bestGSol, P, path_greedy);
 
@@ -99,7 +133,8 @@ int main(int argc, char* argv[]) {
     if (zGreedyBest > 0)
         cout << "Mejora      = " << 100.0 * (zGreedyBest - zHCBest) / zGreedyBest << " %\n";
 
-    cout << "\nLinealidad  = " << linearity(best) << "  (pedida " << P.L_target << ")\n";
+    cout << "\nLinealidad  = " << linearity(best, P) << "  (pedida " << P.L_target << ")";
+    cout << (P.guide.size() >= 2 ? "  respecto a la curva guia\n" : "  respecto a una recta\n");
     cout << "Plataformas = " << countObjects(best, PLATFORM) << " / " << P.target_count[PLATFORM] << "\n";
     cout << "Obstaculos  = " << countObjects(best, OBSTACLE) << " / " << P.target_count[OBSTACLE] << "\n";
     cout << "Enemigos    = " << countObjects(best, ENEMY)    << " / " << P.target_count[ENEMY]    << "\n";
