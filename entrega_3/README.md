@@ -29,7 +29,6 @@ Se implementó una curva de guía que permite al diseñador darle una forma esta
 El diseñador define una *serie de puntos*, estos puntos deben ir separados en el eje X, es decir, no pueden haber puntos encima de otros. Luego a los puntos se les realiza una *interpolación baricéntrica* y se obtiene un polinomio que define la curva. (Función liviana, continua y derivable).
 
 Finalmente, hay un parámetro llamado `L_target` que define qué tan cerca el nivel debe estar de la curva guía. Se calcula la diferencia entre un punto a colocar con la curva mediante *mínimos cuadrados*, y se penaliza la diferencia. Esto permite que el nivel generado tenga una forma establecida por el diseñador, pero sin ser demasiado rígido.
-
 ## Cómo ejecutarlo
 
 ### 1. Definir instancia
@@ -52,26 +51,41 @@ obstacles 15
 # Funcion objetivo
 alpha 0.7
 beta 0.3
-L_target 0.86
+L_target 0.8
+
+# Puntos interpolacion (x = columna, y = fila)
+x 0 y 3
+x 52 y 12
+x 104 y 4
+x 149 y 9
+
+# Busqueda
+seed 1
+restarts 16
 ```
 
-Definir la instancia y luego ejecutar el algoritmo.
+- **Puntos de interpolación (opcionales):** definen la curva guía que siguen las plataformas. Con 2 puntos la curva es una recta, y sin puntos se usa una recta con cualquier pendiente.
+- **Búsqueda (opcional):** `seed` es la semilla (por defecto 1) y `restarts` es la cantidad de reinicios (por defecto 16). Con la misma semilla se obtiene siempre el mismo nivel.
 
-### 2. Compilar
-Entrar a la carpeta `src/algorythm` y ejecutar, se debe utilizar la instancia definida anteriormente (como ejemplo de usa `inst1.txt`):
+### 2. Compilar y ejecutar
+Entrar a la carpeta `src/algorythm/` y ejecutar:
 
 ```bash
-g++ -O2 -std=c++17 level.cpp greedy.cpp main.cpp hill_climbing.cpp -o pcg
-./pcg ../instances/inst1.txt
+make run INST=../instances/inst1.txt
 ```
 
-Esto genera un mapa en formato `.txt` en la carpeta `src/out`.
+Esto compila el programa y lo ejecuta con la instancia indicada. Para borrar el ejecutable se usa `make clean`.
 
-### 3. Ejecutar imagen
+Esto guarda la mejor solución en la carpeta `src/out/`, en dos archivos:
+- `inst1_seed1_hc.txt`: el resultado final, después del Hill Climbing.
+- `inst1_seed1_greedy.txt`: la solución del Greedy de la que partió.
+
+### 3. Generar imagen
 Entrar a la carpeta `src/format/` y ejecutar:
 
 ```bash
-python3 main.py
-``` 
+python3 main.py                              # grafica todos los .txt de src/out/
+python3 main.py ../out/inst1_seed1_hc.txt    # grafica solo ese archivo
+```
 
-Esto transforma el mapa generado en un archivo de imagen `.png` y lo guarda en la carpeta `src/out`.
+Esto transforma cada mapa en una imagen `.png`, que se guarda en `src/out/` al lado de su `.txt`. Si la instancia tiene puntos de interpolación, la imagen también muestra la curva guía.
