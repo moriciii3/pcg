@@ -1,10 +1,3 @@
-"""Experimento 2: mejor Z segun la cantidad de reinicios (pcg original).
-
-restarts en {1, 2, 4, 8, 16, 32}, seed en {1..10}, instancias inst1 e inst2.
-Las ejecuciones son secuenciales para que los tiempos sean comparables.
-
-Uso (desde src/experiments, en WSL):  .venv/bin/python exp2_restarts/run.py
-"""
 import csv
 import os
 import subprocess

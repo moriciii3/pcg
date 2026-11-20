@@ -1,28 +1,8 @@
-// Experimento 1: Z del Hill Climbing iteracion por iteracion.
-//
-// No modifica el codigo fuente: incluye level.h y se compila junto a
-// level.cpp, greedy.cpp y hill_climbing.cpp originales (sin main.cpp):
-//
-//   g++ -O2 -std=c++17 hc_trace.cpp ../../algorythm/level.cpp ../../algorythm/greedy.cpp \
-//       ../../algorythm/hill_climbing.cpp -o ../bin/hc_trace
-//
-// Uso: hc_trace <instancia> <semilla>
-//
-// Hace lo mismo que el reinicio 0 de pcg con esa semilla:
-//   rng(seed), start = uniform(0, H-1)(rng), greedy(P, start, rng)
-// Luego corre hillClimbingTrace (copia de hillClimbing que registra Z en cada iteracion)
-// y, para verificar la copia, el hillClimbing original sobre la misma solucion greedy.
-//
-// Salida (stdout):
-//   iter,Z            <- una linea por iteracion (iteracion 0 = solucion greedy)
-//   # start=.. iters=.. Z_greedy=.. Z_trace=.. Z_orig=.. check=OK|MISMATCH
+// Experimento 1: Copiamos y pegamos todo para no modificar el algoritmo original ya que en esta versión del Hill Climbing almacenamos en una variable llamada "trace" los resultados de evaluación en cada iteración, para ver como mejora la solución paso a paso
 #include "../../algorythm/level.h"
 #include <bits/stdc++.h>
 using namespace std;
 
-// ---------------------------------------------------------------------------
-// Copia de readInstance (main.cpp)
-// ---------------------------------------------------------------------------
 bool readInstance(const string& path, Params& P) {
     ifstream f(path);
     if (!f) {
@@ -91,10 +71,6 @@ bool readInstance(const string& path, Params& P) {
     return true;
 }
 
-// ---------------------------------------------------------------------------
-// Copia de hill_climbing.cpp (Move, isWalkable, applyMove son static alla,
-// asi que no chocan con estas copias)
-// ---------------------------------------------------------------------------
 struct Move {
     double cost;
     int col;
@@ -115,11 +91,10 @@ static void applyMove(Level& level, const Move& m) {
     if (m.row != -1) place(level, m.col, m.row, m.onTop);
 }
 
-// Igual a hillClimbing, pero guarda en `trace` el Z de la solucion actual:
-// trace[0] = solucion inicial (greedy), trace[t] = despues de la t-esima mejora aceptada.
+// Igual a hillClimbing, pero guarda en "trace" el Z de la solucion actual
 Level hillClimbingTrace(Level solution, const Params& P, vector<double>& trace) {
     double currentCost = evaluate(solution, P);
-    trace.push_back(currentCost);                                  // <- agregado
+    trace.push_back(currentCost);
     bool improvement = true;
 
     while (improvement) {
@@ -160,7 +135,7 @@ Level hillClimbingTrace(Level solution, const Params& P, vector<double>& trace) 
             applyMove(solution, best);
             currentCost = best.cost;
             improvement = true;
-            trace.push_back(currentCost);                          // <- agregado
+            trace.push_back(currentCost);
         }
     }
     return solution;
@@ -183,7 +158,7 @@ int main(int argc, char* argv[]) {
 
     vector<double> trace;
     Level hcTrace = hillClimbingTrace(greedySol, P, trace);
-    Level hcOrig  = hillClimbing(greedySol, P);                    // original, para verificar
+    Level hcOrig  = hillClimbing(greedySol, P);
 
     double zG = evaluate(greedySol, P);
     double zT = evaluate(hcTrace, P);

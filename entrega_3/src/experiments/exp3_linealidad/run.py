@@ -1,10 +1,3 @@
-"""Experimento 3: misma curva (inst1, 4 puntos), variando L_target.
-
-L_target en {0, 0.1, ..., 1.0} mas 0.25 y 0.75 (para la figura comparativa), seed en {1..5}.
-Se usa el pcg original con los 16 reinicios de inst1.
-
-Uso (desde src/experiments, en WSL):  .venv/bin/python exp3_linealidad/run.py
-"""
 import csv
 import os
 import subprocess

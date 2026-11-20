@@ -1,7 +1,3 @@
-"""Experimento 1: Z del Hill Climbing por iteracion (inst1 e inst2, semillas 1-10).
-
-Uso (desde esta carpeta, en WSL):  ../.venv/bin/python run.py
-"""
 import csv
 import os
 import subprocess
