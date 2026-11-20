@@ -7,75 +7,570 @@
 \usepackage{url}
 \usepackage[top=3cm,bottom=3cm,left=3.5cm,right=3.5cm,footskip=1.5cm,headheight=1.5cm,headsep=.5cm,textheight=3cm]{geometry}
 
+% ---- Paquetes agregados ----
+\usepackage{ifpdf}
+\ifpdf\def\pgfsysdriver{pgfsys-pdftex.def}\fi
+\usepackage{tikz}
+\usetikzlibrary{babel}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+% Algoritmos para pseudocodigo
+\floatname{algorithm}{Algoritmo}
+\algrenewcommand\algorithmicwhile{\textbf{mientras}}
+\algrenewcommand\algorithmicdo{\textbf{hacer}}
+\algrenewcommand\algorithmicfor{\textbf{para}}
+\algrenewcommand\algorithmicforall{\textbf{para cada}}
+\algrenewcommand\algorithmicif{\textbf{si}}
+\algrenewcommand\algorithmicthen{\textbf{entonces}}
+\algrenewcommand\algorithmicelse{\textbf{si no}}
+\algrenewcommand\algorithmicend{\textbf{fin}}
+\algrenewcommand\algorithmicreturn{\textbf{retornar}}
+\algrenewcommand\algorithmicrepeat{\textbf{repetir}}
+\algrenewcommand\algorithmicuntil{\textbf{hasta que}}
+\algrenewcommand\algorithmicrequire{\textbf{Entrada:}}
+\algrenewcommand\algorithmicensure{\textbf{Salida:}}
+
+% Colores de los niveles
+\definecolor{vacio}{HTML}{F4F1EA}
+\definecolor{plat}{HTML}{7A4B2A}
+\definecolor{obst}{HTML}{5A8F3C}
+\definecolor{enem}{HTML}{C0392B}
+\definecolor{marca}{HTML}{2E6FD8}
+
+% Casilla de color en (columna, fila)
+\newcommand{\cell}[3]{\fill[#3] (#1,#2) rectangle ++(1,1);}
+% Grilla vacia de W x H
+\newcommand{\grid}[2]{%
+	\fill[vacio] (0,0) rectangle (#1,#2);
+	\draw[white, line width=0.6pt] (0,0) grid (#1,#2);
+	\draw[gray!60] (0,0) rectangle (#1,#2);}
 
 \begin{document}
 \title{Inteligencia Artificial \\ \begin{Large}Informe Final: Generación Procedural de Plataformas\end{Large}}
 \author{Bruno Morici}
 \date{\today}
 \maketitle
-
+	
 
 %--------------------No borrar esta secci\'on--------------------------------%
 \section*{Evaluaci\'on}
 
 \begin{tabular}{ll}
-C\'odigo Fuente (20 \%): & \underline{\hspace{2cm}}\\
-Resumen (2 \%): & \underline{\hspace{2cm}}\\
-Introducci\'on (3 \%): & \underline{\hspace{2cm}}\\
-Representaci\'on (10 \%): & \underline{\hspace{2cm}} \\
-Descripci\'on del algoritmo (20 \%): & \underline{\hspace{2cm}} \\
-Experimentos (10 \%): & \underline{\hspace{2cm}} \\
-Resultados (10 \%): & \underline{\hspace{2cm}} \\
-Conclusiones (20 \%): & \underline{\hspace{2cm}}\\
-Bibliograf\'ia (5 \%): & \underline{\hspace{2cm}}\\
- & \\
-\textbf{Nota Final (100 \%)}: & \underline{\hspace{2cm}}
+	C\'odigo Fuente (20 \%): & \underline{\hspace{2cm}}\\
+	Resumen (2 \%): & \underline{\hspace{2cm}}\\
+	Introducci\'on (3 \%): & \underline{\hspace{2cm}}\\
+	Representaci\'on (10 \%): & \underline{\hspace{2cm}} \\
+	Descripci\'on del algoritmo (20 \%): & \underline{\hspace{2cm}} \\
+	Experimentos (10 \%): & \underline{\hspace{2cm}} \\
+	Resultados (10 \%): & \underline{\hspace{2cm}} \\
+	Conclusiones (20 \%): & \underline{\hspace{2cm}}\\
+	Bibliograf\'ia (5 \%): & \underline{\hspace{2cm}}\\
+	& \\
+	\textbf{Nota Final (100 \%)}: & \underline{\hspace{2cm}}
 \end{tabular}
 %---------------------------------------------------------------------------%
 \vspace{2cm}
 
 \begin{abstract}
-Resumen del informe en no m\'as de 10 l\'ineas.
+	En el presente documento se estudia la generación procedural de niveles para videojuegos de plataformas en dos dimensiones, un caso particular de la generación procedural de contenido (PCG). El problema consiste en ubicar plataformas, enemigos y obstáculos en un nivel, de forma que el nivel pueda ser completado según las capacidades de salto del avatar y se acerque a lo pedido por el diseñador. Se revisa el estado del arte y se propone un modelo matemático del problema como un problema de satisfacción de restricciones con optimización (CSOP). Para resolverlo se implementa un algoritmo Greedy, que construye una solución inicial factible columna por columna, y un Hill Climbing con mejor mejora, que la mejora cambiando el contenido de una columna a la vez. Los saltos se verifican recorriendo su trayectoria completa, y la forma del nivel se controla mediante una curva guía definida por el diseñador.
 \end{abstract}
 
 \section{Introducci\'on}
-Una explicaci\'on breve del contenido del informe. Es decir, detalla: Prop\'osito, Estructura del Documento, Descripci\'on (muy breve) del Problema y Motivaci\'on.
+La generación procedural de contenido (PCG) corresponde a la creación automática de contenido para videojuegos mediante algoritmos. En los videojuegos de plataformas en dos dimensiones, como \textit{Super Mario Bros.} o \textit{Geometry Dash}, generar un nivel implica decidir la ubicación de las plataformas, enemigos, obstáculos y huecos, de modo que el jugador pueda recorrerlo desde el inicio hasta la meta.
+
+La industria de los videojuegos necesita contenido nuevo de forma constante, pero crear ese contenido a mano representa un costo importante en tiempo y presupuesto~\cite{Maleki2024Survey}. La PCG permite reducir este esfuerzo y, además, aumentar la rejugabilidad, ya que cada partida puede ofrecer un nivel distinto.
+
+El propósito de este documento es presentar una solución al problema de generar niveles de plataformas 2D jugables que se ajusten a lo pedido por el diseñador. Para esto se revisa el estado del arte, se formula un modelo matemático y se implementan dos algoritmos que trabajan en conjunto: un Greedy, que construye una solución inicial, y un Hill Climbing, que la mejora.
+
+El documento se organiza de la siguiente forma. La Sección~2 define el problema. La Sección~3 presenta el estado del arte. La Sección~4 propone el modelo matemático y la Sección~5 la representación usada. La Sección~6 describe los algoritmos implementados. Las Secciones~7 y~8 presentan los experimentos y sus resultados, y la Sección~9 las conclusiones.
 
 \section{Definici\'on del Problema}
-Explicaci\'on del problema que se va a estudiar, en que consiste, cuales son sus variables, restricciones y objetivos de manera general. Variantes m\'as conocidas que existen.
+Para describir el problema se utiliza como referencia el caso de \textit{Super Mario Bros.} (Nintendo, 1985). El problema que surge en este tipo de videojuegos es cómo ubicar las diferentes plataformas, obstáculos y enemigos dentro de un nivel, de modo que el resultado se acerque lo más posible a los parámetros entregados por el diseñador y que, a su vez, el nivel sea jugable, es decir, que pueda completarse desde el inicio hasta la meta. En estos videojuegos se definen ciertos elementos relevantes para el problema~\cite{Smith2011Launchpad}:
+\begin{itemize}
+	\item \textbf{Avatar:} personaje controlado por el jugador. Sus capacidades de movimiento (caminar, correr y saltar) determinan qué partes del nivel son alcanzables.
+	\item \textbf{Plataformas:} superficies sobre las cuales el avatar puede desplazarse de forma segura.
+	\item \textbf{Obstáculos:} elementos que dañan al avatar o interrumpen su recorrido, por lo que debe saltarlos.
+	\item \textbf{Enemigos:} elementos que el jugador debe eliminar, por ejemplo cayendo sobre ellos.
+	\item \textbf{Huecos:} espacios sin plataforma, cuya caída implica perder una vida.
+\end{itemize}
+
+Muchas de las soluciones existentes dividen el problema en dos partes: la creación de escenas, que son segmentos cortos del nivel, y la unión de esas escenas para formar el nivel completo~\cite{Smith2011Launchpad,Green2020SceneStitching}. También existen enfoques que generan el nivel completo casilla por casilla~\cite{Cooper2022Sturgeon}.
+
+\subsection{Dificultades}
+La principal dificultad del problema es que la cantidad de niveles posibles crece exponencialmente con el tamaño del nivel y con la cantidad de tipos de elementos, por lo que no es posible revisarlos todos. A esto se suman otras dificultades:
+\begin{itemize}
+	\item \textbf{La jugabilidad es una condición global:} no basta con que cada elemento sea compatible con sus vecinos, sino que debe existir un camino completo desde el inicio hasta la meta~\cite{Karth2017WFC}.
+	\item \textbf{La calidad es difícil de medir:} conceptos como la diversión o el desafío son subjetivos, y los modelos que intentan predecirlos tienen una precisión limitada.
+	\item \textbf{Equilibrio entre variedad y control:} dar más libertad al generador produce niveles más variados, pero aumenta el riesgo de obtener niveles injugables.
+\end{itemize}
+
+\subsection{Variables}
+Las variables del problema corresponden a las decisiones que debe tomar el generador. En los enfoques que representan el nivel como una grilla, la decisión es *qué elemento ocupa cada casilla del nivel*. En los enfoques basados en escenas, la decisión es qué escenas se seleccionan y en qué orden se unen. Estas decisiones dependen de parámetros que no cambian durante la generación: las dimensiones del nivel, las capacidades de salto del avatar y las preferencias del diseñador, como la cantidad de cada elemento o la forma general del nivel.
+
+\subsection{Restricciones}
+Para que un nivel sea válido, debe cumplir restricciones como las siguientes:
+\begin{itemize}
+	\item Cada casilla contiene a lo más un elemento.
+	\item Los enemigos y obstáculos se ubican sobre una plataforma.
+	\item La separación y la diferencia de altura entre plataformas respetan las capacidades de salto del avatar.
+	\item \textbf{Jugabilidad:} debe existir un camino desde el inicio hasta la meta que el avatar pueda recorrer caminando, cayendo o saltando.
+\end{itemize}
+Los algoritmos se diferencian en cómo tratan estas restricciones: algunos las garantizan por construcción, otros las verifican después mediante agentes que juegan el nivel y otros no garantizan la jugabilidad.
+
+\subsection{Objetivo}
+El objetivo es obtener un nivel jugable en el que la cantidad de cada tipo de elemento sea lo más cercana posible a la que pidió el diseñador, y cuya forma se acerque a la que este definió, por ejemplo, un nivel plano, uno que sube o uno que sube y baja o uno que tiene una curva.
+
+\subsection{Variantes}
+Las variantes del problema se diferencian principalmente por el tipo de nivel que se genera. La más estudiada es la de niveles lineales de un solo camino, como los de \textit{Super Mario Bros.}, aunque también existen niveles no lineales, con varios caminos o zonas secretas, como los de \textit{Sonic} o \textit{Donkey Kong Country 2}~\cite{Smith2011Launchpad}. Otra variante es la dirección del nivel: la mayoría avanza de forma horizontal, pero hay juegos como \textit{Kid Icarus}, cuyos niveles avanzan hacia arriba~\cite{Cooper2022Sturgeon}. También cambian las mecánicas del jugador, por ejemplo en juegos sin salto estándar como \textit{Super Cat Tales}, y la dificultad, que puede ajustarse a cada jugador según cómo juega~\cite{Shaker2010Personalized}. Por último, está la generación de niveles en 3D, que todavía está poco estudiada~\cite{Maleki2024Survey}.
 
 \section{Estado del Arte}
-Lo m\'as importante que se ha hecho hasta ahora con relaci\'on al problema. Deber\'ia responder preguntas como las siguientes ?`cuando surge?, ?`qu\'e m\'etodos se han usado para resolverlo?, ?`cuales son los mejores algoritmos que se han creado hasta la fecha?, ?`qu\'e representaciones han tenido los mejores resultados?, ?`cu\'al es la tendencia actual?, tipos de movimientos, heur\'isticas, m\'etodos completos, tendencias, etc... Puede incluir gr\'aficos comparativos, o explicativos.\\
-La informaci\'on que describen en este punto se basa en los estudios realizados con antelaci\'on respecto al tema. Dichos estudios se citan de manera que quien lea su estudio pueda tambi\'en
- acceder a las referencias que usted revis\'o. Las citas se realizan mediante el comando \verb+\cite{ }+.
-Por ejemplo, para hacer referencia al art\'iculo de algoritmos h\'ibridos para problemas de satisfacci\'on 
- de restricciones ~\cite{Prosser93Hybrid}.
+\subsection{Origen del problema}
+Crear contenido a mano consume una parte importante del presupuesto de un videojuego~\cite{Shaker2010Personalized}. La PCG surge como una alternativa para reducir estos costos de producción y, además, aumentar la rejugabilidad, ya que cada partida puede ofrecer contenido distinto~\cite{Maleki2024Survey}. Se usa en videojuegos desde fines de los años 70, sobre todo en juegos \textit{roguelike} como \textit{Beneath Apple Manor} (1978) y \textit{Rogue} (1980), que generaban mazmorras distintas en cada partida. En los juegos de plataformas, en cambio, los intentos de generar niveles completos fueron pocos hasta mediados de los 2000. Juegos como \textit{Spelunky} usaron piezas prediseñadas ubicadas en una grilla. Este enfoque resulta adecuado en dicho juego debido a que el jugador puede modificar el nivel con bombas o cuerdas, pero no es aplicable a niveles lineales como los de \textit{Super Mario Bros.}~\cite{Smith2011Launchpad}. Más adelante, con \textit{Infinite Mario Bros}, un clon libre de \textit{Super Mario Bros.}, y las competencias \textit{Mario AI} desde 2009, este juego pasó a ser el entorno de prueba más usado para estudiar el problema.
+
+\subsection{Clasificación de los algoritmos}
+Maleki y Zhao~\cite{Maleki2024Survey} revisan 207 artículos publicados entre 2019 y 2023 y separan los algoritmos de PCG en cinco grupos: (1) métodos de búsqueda, que ven el problema como uno de optimización, como los algoritmos evolutivos; (2) aprendizaje automático, que aprende de datos para generar o ajustar niveles, como las redes neuronales o el aprendizaje por refuerzo; (3) otros métodos constructivos, como el ruido o las gramáticas; (4) modelos de lenguaje (LLM), como MarioGPT, que genera niveles de Mario a partir de texto; y (5) métodos combinados, que mezclan los anteriores, por ejemplo, para reparar niveles. En este documento se agrega un sexto grupo, el de los métodos basados en restricciones, ya que son los únicos que tratan la jugabilidad como una restricción explícita. A continuación se revisan los principales trabajos de cada grupo.
+
+\subsection{Métodos de búsqueda}
+\subsubsection*{Scene Stitching: unión de escenas mediante búsqueda evolutiva}
+Green et al.~\cite{Green2020SceneStitching} no generan escenas, sino que resuelven cómo unirlas. Usan un conjunto de 1691 escenas de \textit{Super Mario Bros.} creadas previamente, cada una marcada con las mecánicas que el jugador debe usar para pasarla. A partir de la secuencia de mecánicas que un agente usa al jugar un nivel original, buscan una secuencia de escenas que entregue una experiencia parecida, pero con un nivel distinto.
+
+La búsqueda se hace con FI-2Pop, un algoritmo genético con dos poblaciones: una de niveles infactibles, que evoluciona para cumplir la jugabilidad, y otra de niveles factibles, que evoluciona para acercarse a la secuencia de mecánicas buscada. Cada individuo es una lista de escenas de largo variable, que se modifica con cruce de dos puntos y con mutaciones que agregan, quitan, dividen, juntan o cambian escenas. Aquí la jugabilidad no se asegura por construcción, sino que se revisa después con un agente externo: un agente A* juega cada nivel varias veces y, si gana en suficientes partidas, el nivel se considera jugable. Con este método, entre un 87,25\,\% y un 100\,\% de los niveles resultaron completables, contra un 25--28,5\,\% de un método voraz, que en cada paso elige la escena cuyas mecánicas más se parecen a las buscadas, sin revisar si el nivel resultante es jugable. Como limitaciones, los niveles quedan más planos y menos variados que los originales, y jugar cada nivel con el agente es costoso.
+
+\subsection{Aprendizaje automático}
+Shaker et al.~\cite{Shaker2010Personalized} adaptan los niveles a cada jugador: con datos de 327 jugadores entrenan redes neuronales que predicen la diversión según cuatro parámetros del nivel y el estilo del jugador, y luego, mediante una búsqueda exhaustiva sobre todas las combinaciones de esos parámetros, eligen la que da más diversión. En sus pruebas, el 60\,\% de los participantes prefirió el nivel adaptado, aunque la jugabilidad no se modela.
+
+\subsection{Métodos constructivos}
+\subsubsection*{Launchpad: generación de escenas basada en ritmo}
+Smith et al.~\cite{Smith2011Launchpad} proponen Launchpad, un generador basado en un modelo del diseño de niveles de plataformas. Su principal avance es que no une trozos de nivel hechos a mano, sino que construye las escenas a partir de los componentes básicos (plataformas, huecos, enemigos y resortes). Por esto casi no requiere trabajo manual: el diseñador no dibuja piezas de nivel, sino que solo define una vez las reglas de la gramática y algunos parámetros, como la frecuencia deseada de cada componente.
+
+Cada escena es un \textit{grupo de ritmo}, un tramo corto del nivel con un desafío. Primero se genera el ritmo, que es la secuencia de acciones del jugador en el tiempo (moverse o saltar). Cada ritmo se define por tres propiedades: su tipo, que indica cómo se reparten las acciones en el tiempo (a intervalos iguales, alternando una corta y una larga, o al azar); su densidad, que indica qué tan seguidas son las acciones; y su duración, de 5, 10, 15 o 20 segundos. Después, una gramática convierte cada acción en geometría; por ejemplo, un salto puede transformarse en un hueco, un enemigo o un resorte. La jugabilidad se asegura por construcción: un modelo físico del avatar indica cuánto tiempo pasa en el aire con cada tipo de salto, y si una geometría no le permite aterrizar antes de la siguiente acción del ritmo, esa opción se descarta.
+
+Las escenas se unen con plataformas de descanso, que son planas y no tienen desafíos, por lo que el nivel completo sigue siendo jugable. Como el algoritmo puede generar muchos niveles distintos, Launchpad aplica la técnica de \textit{generar y probar}: crea muchos candidatos y elige el mejor según qué tan cerca esté de una línea guía definida por el diseñador y de la frecuencia de componentes que este pidió. Como limitaciones, solo genera niveles de un único camino y su modelo físico no considera mecánicas como el doble salto.
+
+\subsubsection*{Occupancy-Regulated Extension}
+Mawhorter y Mateas~\cite{Mawhorter2010ORE} proponen el algoritmo \textit{Occupancy-Regulated Extension} (ORE), que arma niveles uniendo piezas hechas a mano a partir de anclas, que son posiciones que el jugador puede ocupar. En cada paso se elige un ancla del nivel y se coloca una pieza que calce en esa posición, repitiendo hasta completar el nivel. El método da niveles variados e incluso con varios caminos, pero no asegura que sean jugables y requiere crear muchas piezas a mano.
+
+\subsection{Métodos basados en restricciones}
+Cooper~\cite{Cooper2022Sturgeon} propone Sturgeon, que plantea la generación como un problema de restricciones sobre variables booleanas y lo resuelve con \textit{solvers} como SAT o ASP. El nivel se arma casilla por casilla usando patrones aprendidos de un nivel de ejemplo y una restricción de alcanzabilidad que exige un camino desde el inicio hasta la meta. En \textit{Super Mario Bros.} genera niveles jugables en segundos y también permite reparar o completar niveles. Este enfoque se parece a \textit{Wave\-Function\-Collapse} (WFC), que según Karth y Smith~\cite{Karth2017WFC} también resuelve restricciones, pero solo entre casillas vecinas, por lo que no asegura que exista un camino completo por el nivel.
+
+\subsection{Representaciones y resultados}
+La Tabla~\ref{tab:comparacion} resume los enfoques revisados según su representación del nivel y cómo tratan la jugabilidad.
+
+\begin{table}[h]
+	\centering
+	\footnotesize
+	\begin{tabular}{p{2.1cm}p{2.3cm}p{2.3cm}p{2.4cm}p{2.3cm}}
+		\hline
+		\textbf{Trabajo} & \textbf{Enfoque} & \textbf{Representación} & \textbf{Jugabilidad} & \textbf{Objetivo} \\
+		\hline
+		Launchpad & Gramática con generar y probar & Ritmo y geometría & Garantizada por construcción & Críticos del diseñador \\
+		\hline
+		ORE & Ensamblaje de piezas & Piezas con anclas & No garantizada & Variedad \\
+		\hline
+		Shaker et al. & Modelo del jugador y búsqueda exhaustiva & Vector de 4 parámetros & No modelada & Maximizar la diversión predicha \\
+		\hline
+		Scene Stitching & Evolutivo (FI-2Pop) & Secuencia de escenas & Verificada con agente A* & Similitud de mecánicas \\
+		\hline
+		Sturgeon & Satisfacción de restricciones & Grilla de casillas & Garantizada como restricción & Distribución de casillas \\
+		\hline
+	\end{tabular}
+	\caption{Comparación de enfoques para la generación de niveles de plataformas 2D.}
+	\label{tab:comparacion}
+\end{table}
+
+Cada representación tiene ventajas distintas. El ritmo con geometría asegura la jugabilidad de forma directa, pero solo permite niveles de un camino. Las escenas o piezas reducen la búsqueda, pero dependen de una biblioteca previa que limita la variedad. El vector de parámetros es simple y rápido, pero solo controla aspectos generales del nivel. La grilla de casillas es la más flexible, ya que cada casilla puede tomar cualquier tipo de elemento, por lo que es posible representar cualquier forma de nivel y escribir la jugabilidad como una restricción. Su desventaja es que cada casilla es una decisión distinta, por lo que el espacio de búsqueda crece muy rápido con el tamaño del nivel. Aun así, es la representación usada en este documento por su flexibilidad. Como cada trabajo se evalúa con métricas y juegos distintos, no hay una forma común de decir qué representación es mejor.
+
+\subsection{Tendencia actual}
+La generación de niveles es el tema más estudiado de la PCG, con 102 de los 207 artículos revisados por Maleki y Zhao, y \textit{Super Mario Bros.} es el juego más usado~\cite{Maleki2024Survey}. Entre 2019 y 2023 los métodos más usados fueron los clásicos, como el ruido y las gramáticas, que son simples pero dan niveles con poca estructura o solo lineales, seguidos por el aprendizaje automático, que genera niveles parecidos a los originales pero, en muchos casos, sin considerar si son jugables. Los LLM, en tanto, pasaron de uno o dos artículos al año a 13 en 2023. La investigación apunta a combinar métodos, a reparar niveles en vez de generarlos desde cero y a la generación en 3D.
 
 \section{Modelo Matem\'atico}
-Uno o m\'as modelos matem\'aticos para el problema ESCRITOS EN C\'ODIGO LATEX, no una imagen pegada al documento.
+El problema se formula como un \textbf{problema de satisfacción de restricciones con optimización (CSOP)}: las restricciones definen qué niveles son válidos y la función objetivo elige, entre ellos, el que mejor se ajusta a lo pedido por el diseñador.
+
+\subsection{Variables y dominio}
+\[
+X_{ijk} =
+\begin{cases}
+	1 & \text{si la coordenada } (x = i,\, y = j) \text{ tiene un objeto de tipo } k\\
+	0 & \text{en otro caso}
+\end{cases}
+\]
+\[
+\forall\, i \in \{1, \dots, W\},\quad \forall\, j \in \{1, \dots, H\},\quad \forall\, k \in K = \{P, E, O\}
+\]
+donde $W$ es el ancho del mapa, $H$ su alto (la fila $j = 1$ es la de más abajo) y $K$ los tipos de objeto: plataforma ($P$), enemigo ($E$) y obstáculo ($O$). Una casilla sin objeto tiene $X_{ijk} = 0$ para todo $k$.
+
+\subsection{Parámetros}
+\begin{itemize}
+	\item $W, H$: ancho y alto del mapa.
+	\item $S_k$: cantidad del objeto $k$ solicitada por el diseñador.
+	\item $maxXJump$: desplazamiento horizontal máximo de un salto, medido como la cantidad máxima de columnas vacías entre dos plataformas a la misma altura.
+	\item $maxYJump$: desplazamiento vertical máximo de un salto.
+	\item $\alpha, \beta \geq 0$, con $\alpha + \beta = 1$: importancia de la cantidad de objetos y de la forma del nivel, respectivamente.
+	\item $C = \{(x_1, y_1), \dots, (x_n, y_n)\}$: puntos de la curva guía definida por el diseñador, donde $x_c$ es una columna e $y_c$ una fila.
+	\item $L^{*} \in [0, 1]$: qué tan cerca se desea que el nivel siga la curva guía.
+\end{itemize}
+
+\subsection{Función objetivo}
+Se consideran dos criterios: (1) la diferencia entre la cantidad de objetos solicitados por el diseñador y los realmente ubicados, y (2) qué tan cerca sigue el nivel la curva guía.
+\[
+\min\; Z = \alpha \cdot \frac{\sum_{k \in K} \left|\, S_k - \sum_{i=1}^{W} \sum_{j=1}^{H} X_{ijk} \,\right|}{\sum_{k \in K} S_k} \;+\; \beta \cdot \left|\, L - L^{*} \,\right|
+\]
+
+El primer término es la discrepancia entre lo pedido y lo obtenido, dividida por el total pedido para que quede entre 0 y 1. El segundo término penaliza la diferencia entre $L$ y lo pedido por el diseñador, donde $L$ es un valor calculado que mide, mediante mínimos cuadrados, qué tan cerca están las alturas reales de las plataformas de la curva guía:
+\begin{itemize}
+	\item La curva guía $g(i)$ es el polinomio que pasa por todos los puntos de $C$, calculado mediante interpolación baricéntrica~\cite{Berrut2004Barycentric}.
+	\item Para cada columna $i$ con plataforma, su altura real es $h_i = \sum_{j} j \cdot X_{ijP}$.
+	\item La curva se desplaza verticalmente para que calce lo mejor posible con las plataformas (ajuste por mínimos cuadrados), y se mide la distancia promedio $d$ de las plataformas a la curva desplazada.
+	\item Finalmente, $L = 1 - \dfrac{d}{(H - 1)/2}$, por lo que $L = 1$ indica que las plataformas siguen exactamente la forma de la curva.
+\end{itemize}
+Con dos puntos, la curva guía es una recta y $L$ mide la linealidad del nivel, de forma similar a la línea guía de Launchpad~\cite{Smith2011Launchpad}.
+
+\subsection{Restricciones}
+\textbf{R1. A lo más una plataforma por columna} (y lo mismo para enemigos y obstáculos):
+\[
+\sum_{j=1}^{H} X_{ijk} \leq 1 \qquad \forall\, i,\; \forall\, k \in K
+\]
+
+\textbf{R2. Todo enemigo u obstáculo va sobre una plataforma:}
+\[
+X_{i,(j+1),k} \leq X_{ijP} \quad \forall\, i,\; \forall\, j \in \{1, \dots, H-1\},\; \forall\, k \in \{E, O\}
+\qquad\qquad
+X_{i1k} = 0 \quad \forall\, i,\; \forall\, k \in \{E, O\}
+\]
+
+\textbf{R3. Un solo objeto por casilla:}
+\[
+\sum_{k \in K} X_{ijk} \leq 1 \qquad \forall\, i, j
+\]
+
+\textbf{R4. Respetar el salto máximo.} Sea $R_{ij}$ el conjunto de desplazamientos $(dx, dy)$ que el avatar puede alcanzar desde una plataforma en $(i, j)$ con algún salto cuya trayectoria no atraviese casillas ocupadas. La altura máxima alcanzable a una distancia $dx$ sigue la parábola del salto máximo, con $D = maxXJump + 1$:
+\[
+f(dx) =
+\begin{cases}
+	maxYJump & \text{si } dx \leq D/2\\[2pt]
+	\dfrac{4 \cdot maxYJump \cdot dx \cdot (D - dx)}{D^2} & \text{si } dx > D/2
+\end{cases}
+\qquad\quad
+dy \leq \lfloor f(dx) \rfloor \quad \forall\, (dx, dy) \in R_{ij}
+\]
+Toda plataforma, salvo las de la última columna, debe tener al menos una plataforma alcanzable más adelante:
+\[
+X_{ijP} \leq \sum_{(dx, dy) \in R_{ij}} X_{(i+dx),(j+dy),P} \qquad \forall\, i \in \{1, \dots, W-1\},\; \forall\, j
+\]
+
+\textbf{R5. El inicio y el fin son plataformas libres}, sin enemigos ni obstáculos encima:
+\[
+\sum_{j=1}^{H} X_{ijP} = 1, \qquad \sum_{j=1}^{H} \left( X_{ijE} + X_{ijO} \right) = 0 \qquad \forall\, i \in \{1, W\}
+\]
 
 \section{Representaci\'on}
-Representaci\'on matem\'atica y estructura de datos que se usa (arreglos, matrices, etc.), por qu\'e se usa (maneja restricciones, f\'acil de modificar, eficiente, etc), la relaci\'on entre la representaci\'on matem\'atica y la estructura.
+La representación usada por el Greedy y por el Hill Climbing no es igual a la variable de decisión, sino una forma equivalente y más compacta. Una solución es una matriz de $W \times H$ casillas, donde cada casilla guarda el tipo de objeto que contiene:
+\[
+cells[i][j] \in \{0, 1, 2, 3\} = \{\text{vacío}, \text{plataforma}, \text{obstáculo}, \text{enemigo}\}
+\]
+La relación con la variable del modelo es directa: $X_{ijk} = 1 \Leftrightarrow cells[i][j] = k$. En el código, el nivel se guarda en una estructura \texttt{Level} con el ancho, el alto y la matriz \texttt{cells}, como un vector de vectores de enteros. La Figura~\ref{fig:representacion} muestra un ejemplo.
+
+\begin{figure}[h]
+	\centering
+	\begin{tikzpicture}[scale=0.5]
+		% Nivel dibujado
+		\begin{scope}
+			\grid{8}{5}
+			\cell{0}{0}{plat}\cell{1}{0}{plat}
+			\cell{3}{1}{plat}\cell{3}{2}{enem}
+			\cell{4}{1}{plat}
+			\cell{5}{2}{plat}\cell{5}{3}{obst}
+			\cell{6}{2}{plat}\cell{7}{2}{plat}
+			\foreach \i in {0,...,7} \node[font=\scriptsize] at (\i+0.5,-0.5) {\i};
+			\foreach \j in {0,...,4} \node[font=\scriptsize] at (-0.5,\j+0.5) {\j};
+			\node[font=\small] at (4,-1.4) {Nivel};
+		\end{scope}
+		\draw[->, thick] (8.4,2.5) -- (10.2,2.5);
+		% Matriz
+		\begin{scope}[shift={(11.6,0)}]
+			\draw[gray!60] (0,0) grid (8,5);
+			\foreach \i/\j/\v in {0/0/1,1/0/1,3/1/1,3/2/3,4/1/1,5/2/1,5/3/2,6/2/1,7/2/1} {
+				\node[font=\small\bfseries] at (\i+0.5,\j+0.5) {\v};
+			}
+			\foreach \i in {0,...,7} \node[font=\scriptsize] at (\i+0.5,-0.5) {\i};
+			\foreach \j in {0,...,4} \node[font=\scriptsize] at (-0.5,\j+0.5) {\j};
+			\node[font=\small] at (4,-1.4) {Matriz \texttt{cells[i][j]} (vacías = 0)};
+		\end{scope}
+		% Leyenda
+		\begin{scope}[shift={(3.3,-3)}, scale=0.8]
+			\cell{0}{0}{plat}   \node[right, font=\scriptsize] at (1.1,0.5) {1: plataforma};
+			\cell{6}{0}{obst}   \node[right, font=\scriptsize] at (7.1,0.5) {2: obstáculo};
+			\cell{12}{0}{enem}  \node[right, font=\scriptsize] at (13.1,0.5) {3: enemigo};
+			\fill[vacio] (18,0) rectangle ++(1,1); \draw[gray!60] (18,0) rectangle ++(1,1);
+			\node[right, font=\scriptsize] at (19.1,0.5) {0: vacío};
+		\end{scope}
+	\end{tikzpicture}
+	\caption{Ejemplo de la representación de una solución: cada casilla de la matriz guarda el tipo de objeto que contiene.}
+	\label{fig:representacion}
+\end{figure}
+
+Se eligió esta representación por las siguientes razones:
+\begin{itemize}
+	\item \textbf{Maneja restricciones por sí sola:} como cada casilla guarda un único valor, la restricción R3 (un objeto por casilla) se cumple siempre, sin necesidad de revisarla.
+	\item \textbf{Es fácil de modificar:} cambiar una casilla o una columna completa es una asignación directa, lo que simplifica los movimientos del Greedy y del Hill Climbing.
+	\item \textbf{Es fácil de revisar:} para verificar un salto basta con consultar las casillas por las que pasa la trayectoria del avatar.
+\end{itemize}
+
+Los parámetros de cada instancia (dimensiones, saltos máximos, cantidades pedidas, pesos, curva guía y semilla) se leen desde un archivo de texto, por lo que no es necesario modificar el código para generar otra instancia. Cada solución se guarda en un archivo de texto con los parámetros en el encabezado y el contenido de cada casilla, que luego se grafica con un programa en Python.
 
 \section{Descripci\'on del algoritmo}
-C\'omo fue implementando, interesa la implementaci\'on m\'as que el algoritmo gen\'erico, es decir,
-si se tiene que implementar SA, lo que se espera es que se explique en pseudo c\'odigo la estructura
-general y en p\'arrafo explicativo cada parte como fue implementada para su caso particular, si
-se utilizan operadores se debe explicar por que se utiliz\'o ese operador, si fuera el caso de una
-t\'ecnica completa, si se utiliza recursi\'on o no, etc. Use diagramas para mostrar la estructura general del algoritmo, diagramas de flujo de movimientos, esquemas, etc. En este punto no se espera que se incluya c\'odigo, eso va aparte en la entrega del c\'odigo fuente.
+\subsection{Estructura general}
+La solución combina dos algoritmos: un Greedy, que construye una solución inicial factible, y un Hill Climbing con mejor mejora, que la mejora. Para explorar distintas zonas del espacio de búsqueda, este proceso se repite varias veces (reinicios), cada vez desde un punto de partida distinto elegido al azar según la semilla de la instancia, y se guarda la mejor solución encontrada (Algoritmo~\ref{alg:general}).
+
+\begin{algorithm}[h]
+	\caption{Estructura general}
+	\label{alg:general}
+	\begin{algorithmic}[1]
+		\Require instancia (parámetros, semilla, cantidad de reinicios)
+		\Ensure mejor nivel encontrado
+		\State $mejor \gets$ ninguno
+		\For{$r = 1$ \textbf{hasta} $reinicios$}
+		\State $inicio \gets$ fila al azar entre $0$ y $H-1$ \Comment{según la semilla}
+		\State $s_0 \gets \Call{Greedy}{inicio}$
+		\State $s \gets \Call{HillClimbing}{s_0}$
+		\If{$s$ es factible \textbf{y} $Z(s) < Z(mejor)$}
+		\State $mejor \gets s$
+		\EndIf
+		\EndFor
+		\State \Return $mejor$
+	\end{algorithmic}
+\end{algorithm}
+
+Ambos algoritmos comparten la misma función de evaluación $Z$ (la función objetivo del modelo) y la misma función de factibilidad, que revisa todas las restricciones en un solo lugar. Esta función puede revisar el nivel completo o solo un tramo de columnas, lo que se aprovecha en ambos algoritmos para no revisar todo el nivel en cada paso.
+
+\subsection{Verificación de saltos}
+La restricción más compleja es R4, que asegura que el jugador pueda avanzar de una plataforma a la siguiente. Para revisarla se consideran las siguientes reglas:
+\begin{itemize}
+	\item \textbf{Trayectoria completa:} un salto no solo se revisa en su punto de llegada. Se recorre en pasos de 0,1 columnas y, en cada paso, las casillas que ocupa el avatar (de una casilla de alto) deben estar vacías. Cuando el avatar entra en la columna de destino con los pies a la altura de la plataforma o más arriba, baja en vertical hasta aterrizar. Si antes choca con una plataforma, un obstáculo o un enemigo, el salto se descarta.
+	\item \textbf{Familia de saltos:} en vez de una sola parábola, se considera una familia de saltos con distintas alturas y largos, desde dejarse caer hasta el salto máximo (Figura~\ref{fig:saltos}). Un salto es válido si al menos una de estas trayectorias llega sin chocar. Esto evita rechazar saltos que la parábola máxima no logra, pero que un salto más corto o más bajo sí.
+	\item \textbf{Enemigos:} el enemigo se derrota cayendo sobre él, por lo que para llegar a una plataforma con enemigo se debe aterrizar una casilla más arriba. Una vez derrotado, la plataforma queda libre para el siguiente salto.
+	\item \textbf{Obstáculos:} no se pueden pisar, por lo que el jugador debe saltarlos. Para que aporten al recorrido, deben quedar en el camino del jugador: no más abajo que la plataforma desde donde salta, ni más arriba que las plataformas que los rodean.
+	\item \textbf{Borde superior:} las plataformas pueden ubicarse hasta la fila más alta del mapa. Al revisar los saltos, se consideran filas vacías por encima del mapa para que el avatar tenga espacio al saltar; estas filas no se agregan al nivel generado.
+\end{itemize}
+
+\begin{figure}[h]
+	\centering
+	\begin{tikzpicture}[scale=0.42]
+		% (a) Familia de saltos
+		\begin{scope}
+			\grid{12}{8}
+			\cell{0}{4}{plat}
+			\draw[marca, thick, domain=0:7, samples=40]  plot ({0.5+\x}, {5+3*\x*(7-\x)/12.25});
+			\draw[marca, thick, domain=0:4, samples=30]  plot ({0.5+\x}, {5+2*\x*(4-\x)/4});
+			\draw[marca, thick, domain=0:2, samples=20]  plot ({0.5+\x}, {5+1*\x*(2-\x)/1});
+			\draw[marca, thick, dashed, domain=0.5:4.2, samples=30] plot ({0.5+\x}, {5-0.36*(\x-0.5)*(\x-0.5)});
+			\node[font=\small] at (6,-1) {(a) Familia de saltos desde una plataforma};
+		\end{scope}
+		% (b) Obstaculo en la trayectoria
+		\begin{scope}[shift={(15,0)}]
+			\grid{12}{8}
+			\cell{0}{1}{plat}\cell{6}{1}{plat}
+			\cell{3}{1}{plat}\cell{3}{2}{obst}
+			\draw[enem, thick, domain=0:6, samples=40] plot ({0.5+\x}, {2+1*\x*(6-\x)/9});
+			\node[enem, font=\bfseries] at (3.5,3.6) {$\times$};
+			\draw[marca, thick, domain=0:6, samples=40] plot ({0.5+\x}, {2+4*\x*(6-\x)/9});
+			\node[font=\small] at (6,-1) {(b) Un salto bajo choca; uno alto pasa};
+		\end{scope}
+	\end{tikzpicture}
+	\caption{Verificación de saltos. (a) Algunas trayectorias de la familia: saltos de distinta altura y largo, y una caída (línea punteada). (b) Un salto es válido si al menos una trayectoria llega a la plataforma de destino sin atravesar casillas ocupadas.}
+	\label{fig:saltos}
+\end{figure}
+
+\subsection{Greedy}
+El Greedy construye el nivel columna por columna, de izquierda a derecha (Algoritmo~\ref{alg:greedy}). Sus componentes son los siguientes:
+\begin{itemize}
+	\item \textbf{Punto de partida:} la primera columna es una plataforma libre (restricción R5), ubicada en la fila de inicio. Esta fila se elige al azar en cada reinicio, según la semilla de la instancia, por lo que distintas semillas generan niveles distintos.
+	\item \textbf{Alternativas:} en cada columna se elige entre 4 patrones: columna vacía, plataforma, plataforma con un obstáculo encima o plataforma con un enemigo encima, donde la plataforma puede ir en cualquier fila (Figura~\ref{fig:patrones}). Como cada patrón tiene a lo más una plataforma y el objeto siempre va encima de ella, las restricciones R1, R2 y R3 se cumplen por construcción.
+	\item \textbf{Solo alternativas factibles:} cada alternativa se revisa con la función de factibilidad, solo desde la última plataforma pisable hasta la columna actual, ya que lo anterior ya fue revisado. Además, se exige que el hueco que queda abierto todavía se pueda cerrar con algún salto, por lo que el nivel nunca queda en un estado sin salida.
+	\item \textbf{Función miope:} entre las alternativas factibles, se elige la de menor costo según la función miope. Si varias empatan, se elige una de ellas al azar según la semilla.
+\end{itemize}
+
+La función miope es casi igual a la función de evaluación $Z$, pero evalúa un mapa parcial y no el completo: solo considera las columnas construidas hasta el momento, y compara la cantidad de cada objeto con lo pedido en proporción al avance. Por ejemplo, si se lleva el 25\,\% del nivel, se compara con el 25\,\% de los objetos pedidos:
+\[
+Z_{miope} = \alpha \cdot \frac{\sum_{k} \left|\, S_k \cdot \frac{i}{W} - \text{objetos de tipo } k \text{ ubicados} \,\right|}{\sum_{k} S_k} \;+\; \beta \cdot \left|\, L - L^{*} \,\right|
+\]
+Si se comparara con el total pedido, colocar un objeto siempre bajaría el costo, y el Greedy concentraría todos los objetos al inicio del nivel.
+
+\begin{figure}[h]
+	\centering
+	\begin{tikzpicture}[scale=0.45]
+		\begin{scope}[shift={(0,0)}]   \grid{1}{6} \node[font=\small] at (0.5,-0.8) {Vacía}; \end{scope}
+		\begin{scope}[shift={(4,0)}]   \grid{1}{6} \cell{0}{2}{plat} \node[font=\small] at (0.5,-0.8) {Plataforma}; \end{scope}
+		\begin{scope}[shift={(9,0)}]   \grid{1}{6} \cell{0}{2}{plat}\cell{0}{3}{obst} \node[font=\small, align=center] at (0.5,-1.2) {Plataforma\\+ obstáculo}; \end{scope}
+		\begin{scope}[shift={(14,0)}]  \grid{1}{6} \cell{0}{2}{plat}\cell{0}{3}{enem} \node[font=\small, align=center] at (0.5,-1.2) {Plataforma\\+ enemigo}; \end{scope}
+		\draw[<->, thick, marca] (16.3,0.3) -- (16.3,5.7) node[midway, right, font=\small] {cualquier fila};
+	\end{tikzpicture}
+	\caption{Los 4 patrones de columna entre los que eligen el Greedy y el Hill Climbing.}
+	\label{fig:patrones}
+\end{figure}
+
+\begin{algorithm}[h]
+	\caption{Greedy}
+	\label{alg:greedy}
+	\begin{algorithmic}[1]
+		\Require fila de inicio, parámetros de la instancia
+		\Ensure nivel factible
+		\State Ubicar una plataforma libre en la columna 1, en la fila de inicio
+		\For{cada columna $i = 2$ \textbf{hasta} $W$}
+		\State $opciones \gets$ todos los patrones de columna (en todas las filas) que son factibles
+		\State $mejor \gets$ patrón de $opciones$ con menor $Z_{miope}$ \Comment{empates: al azar}
+		\State Aplicar $mejor$ en la columna $i$
+		\EndFor
+		\State \Return nivel
+	\end{algorithmic}
+\end{algorithm}
+
+\subsection{Hill Climbing}
+El Hill Climbing con mejor mejora parte desde la solución del Greedy y la mejora paso a paso (Algoritmo~\ref{alg:hc}). Sus componentes son los siguientes:
+\begin{itemize}
+	\item \textbf{Solución inicial:} la entregada por el Greedy, que siempre es factible.
+	\item \textbf{Función de evaluación:} la misma función objetivo $Z$ del modelo, ahora sobre el nivel completo.
+	\item \textbf{Movimiento:} cambiar el patrón de una columna. Se elige una columna y su contenido se reemplaza por otro de los 4 patrones de la Figura~\ref{fig:patrones}, en cualquier fila. Con un solo movimiento se puede subir o bajar una plataforma, poner o quitar un enemigo, cambiar un enemigo por un obstáculo, o abrir o cerrar un hueco (Figura~\ref{fig:movimiento}).
+	\item \textbf{Mejor mejora:} en cada iteración se construye todo el vecindario, es decir, todos los cambios posibles en todas las columnas, y se guardan solo los vecinos factibles. Se elige el vecino con menor $Z$: si mejora a la solución actual, se avanza a él; si ningún vecino mejora, el algoritmo termina.
+\end{itemize}
+
+El movimiento se eligió porque mantiene la mayoría de las restricciones por sí solo. Al igual que en el Greedy, un patrón de columna siempre cumple R1, R2 y R3, por lo que solo se deben revisar los saltos (R4) y que el inicio y el fin sean plataformas libres (R5). Además, cambiar una columna solo afecta los saltos entre la plataforma pisable anterior y la siguiente, por lo que cada vecino se revisa solo en ese tramo, y no en todo el nivel (Figura~\ref{fig:movimiento}). Con un nivel de $W$ columnas y $H$ filas, el vecindario tiene a lo más $W \cdot (3H - 2)$ vecinos.
+
+\begin{figure}[h]
+	\centering
+	\begin{tikzpicture}[scale=0.42]
+		\newcommand{\nivelbase}{%
+			\cell{0}{0}{plat}
+			\cell{2}{2}{plat}\cell{3}{2}{plat}\cell{3}{3}{enem}
+			\cell{7}{2}{plat}\cell{7}{3}{obst}
+			\cell{8}{2}{plat}\cell{9}{1}{plat}}
+		% Antes
+		\begin{scope}
+			\grid{10}{6} \nivelbase \cell{5}{0}{plat}
+			\draw[marca, line width=1.6pt] (5,0) rectangle (6,6);
+			\node[font=\small] at (5,-1) {Solución actual};
+		\end{scope}
+		\draw[->, line width=1.2pt] (10.8,3) -- (13.2,3) node[midway, above, font=\small] {cambiar};
+		% Despues
+		\begin{scope}[shift={(14,0)}]
+			\grid{10}{6} \nivelbase \cell{5}{2}{plat}\cell{5}{3}{obst}
+			\fill[marca, opacity=0.12] (3,0) rectangle (9,6);
+			\draw[marca, dashed] (3,0) rectangle (9,6);
+			\draw[marca, line width=1.6pt] (5,0) rectangle (6,6);
+			\node[font=\small] at (5,-1) {Vecino (zona revisada en azul claro)};
+		\end{scope}
+	\end{tikzpicture}
+	\caption{Movimiento del Hill Climbing: la columna marcada pasa de una plataforma baja a una plataforma con un obstáculo encima, a la altura del camino. Solo se revisan los saltos entre la plataforma pisable anterior y la siguiente.}
+	\label{fig:movimiento}
+\end{figure}
+
+\begin{algorithm}[h]
+	\caption{Hill Climbing con mejor mejora}
+	\label{alg:hc}
+	\begin{algorithmic}[1]
+		\Require solución inicial $s$ (entregada por el Greedy)
+		\Ensure solución mejorada
+		\Repeat
+		\State $vecindario \gets \emptyset$
+		\For{cada columna $i$ \textbf{y} cada patrón $p$ distinto al actual}
+		\State $s' \gets s$ con la columna $i$ cambiada al patrón $p$
+		\If{$s'$ es factible en el tramo afectado}
+		\State agregar $s'$ a $vecindario$
+		\EndIf
+		\EndFor
+		\State $s^{*} \gets$ vecino de $vecindario$ con menor $Z$
+		\State $mejora \gets Z(s^{*}) < Z(s)$
+		\If{$mejora$} $s \gets s^{*}$ \EndIf
+		\Until{\textbf{no} $mejora$}
+		\State \Return $s$
+	\end{algorithmic}
+\end{algorithm}
 
 \section{Experimentos}
-Se necesita saber c\'omo se hicieron los experimentos para testear los resultados del algoritmo (metodolog\'ia usada, entorno de esperimentaci\'on, etc.), cu\'ales son, c\'omo se definen y c\'omo se obtienen par\'ametros del algoritmo, como los fueron modificando, describir las instancias que se usaron (complejidad, estructura, etc), criterio de t\'ermino (si aplica). Debe comparar su algoritmo con el estado del arte, adem\'as de comparar ejecuciones con distintas especificaciones de su mismo algoritmo (Ejm. el valor del par\'ametro x siendo 0.1 vs 0.5 vs 0.9). Describir cantidad de ejecuciones usando semillas distintas para generar estad\'isticas.
+El algoritmo se implementó en C++ y se compiló con \texttt{g++ -O2}. Se ejecutó en Ubuntu (WSL), y los gráficos se generaron con Python y matplotlib. Se usaron dos instancias base de $W=150$ y $H=16$, con saltos $max\_x=6$ y $max\_y=4$, que piden 75 plataformas, 20 enemigos y 15 obstáculos, con $\alpha=0.7$ y $\beta=0.3$:
+\begin{itemize}
+	\item \textbf{inst1}: curva guía de 4 puntos, $(0,3)$, $(52,12)$, $(104,4)$ y $(149,9)$, con $L^{*}=0.8$.
+	\item \textbf{inst2}: recta de 2 puntos, con $L^{*}=0.86$.
+\end{itemize}
+Cada experimento genera copias de estas instancias y cambia solo el parámetro que se estudia. Como la semilla va dentro de cada instancia, al volver a ejecutarlas se obtienen los mismos resultados.
+
+\begin{itemize}
+	\item \textbf{Experimento 1 (iteraciones del Hill Climbing):} mide el valor de $Z$ en cada iteración del Hill Climbing, partiendo de la solución del Greedy (iteración 0). Se usó un reinicio, con las semillas 1 a 10, en inst1 e inst2.
+	\item \textbf{Experimento 2 (reinicios):} mide la mejor $Z$ obtenida con 1, 2, 4, 8, 16 y 32 reinicios, con las semillas 1 a 10, en inst1 e inst2 (120 ejecuciones).
+	\item \textbf{Experimento 3 (linealidad):} usa inst1 con 16 reinicios y varía $L^{*}$ entre 0 y 1, con las semillas 1 a 5. Se compara la linealidad obtenida con la pedida y se observa cómo se ven las escenas.
+\end{itemize}
+
+No se hace una comparación numérica con los trabajos del estado del arte, porque estos usan otras representaciones, objetivos y métricas. La evaluación se centra en el comportamiento del propio algoritmo.
 
 \section{Resultados}
-Que fue lo que se logr\'o con la experimentaci\'on, incluir tablas y par\'ametros, gr\'aficos (por ejm boxplot), lo m\'as explicativo posible. En los resultados se espera que concluya cu\'al fue el rendimiento del algoritmo con los experimentos detallados en la secci\'on anterior, y compare las diferencias entre configuraciones distintas de los experimentos. Analizar los resultados obtenidos y concluir acerca de aspectos del algoritmo y/o de la complejidad de las instancias, o acerca de caracter\'isticas relacionadas con su implementaci\'on.
+
+\subsection{Experimento 1}
+En la Figura~\ref{fig:exp1}, cada línea es una semilla y muestra cómo baja $Z$ en cada iteración del Hill Climbing.
+\begin{itemize}
+	\item \textbf{inst1:} el Greedy entrega $Z \approx 0.0065$, lo que equivale a que falte un solo objeto ($0.7/110$). El Hill Climbing lo corrige en 1 a 3 iteraciones.
+	\item \textbf{inst2:} en la mayoría de las semillas pasa lo mismo. Las excepciones son las semillas que parten en filas altas: ahí el Greedy queda peor ($Z \approx 0.05$), el Hill Climbing necesita entre 39 y 80 iteraciones, y en 3 de esos 4 casos queda en un óptimo local sin llegar a $Z=0$.
+\end{itemize}
+En la mayoría de las semillas, la mejora del Hill Climbing es mínima en valor absoluto.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=\textwidth]{figuras/exp1_z_vs_iter.png}
+	\caption{Experimento 1: $Z$ de la solución actual en cada iteración del Hill Climbing (iteración 0 = Greedy).}
+	\label{fig:exp1}
+\end{figure}
+
+\subsection{Experimento 2}
+La Figura~\ref{fig:exp2} muestra, para cada cantidad de reinicios, la distribución de la mejor $Z$ en las 10 semillas, en escala logarítmica. El triángulo marca el promedio.
+\begin{itemize}
+	\item \textbf{inst1:} al aumentar los reinicios, $Z$ baja y las cajas se hacen más angostas. El promedio pasa de $3.3\cdot10^{-6}$ con 1 reinicio a $1.8\cdot10^{-7}$ con 32.
+	\item \textbf{inst2:} el efecto es mayor. Con 1 reinicio, $Z$ va de $10^{-7}$ a $10^{-2}$; con 2 reinicios desaparecen los casos malos, y desde ahí los resultados quedan concentrados bajo $10^{-5}$.
+\end{itemize}
+El tiempo crece de forma lineal con los reinicios: con 32 reinicios se demora 2.1~s en inst1 y 9.7~s en inst2.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=\textwidth]{figuras/exp2_boxplot_z.png}
+	\caption{Experimento 2: mejor $Z$ según la cantidad de reinicios (10 semillas, escala logarítmica).}
+	\label{fig:exp2}
+\end{figure}
+
+\subsection{Experimento 3}
+Entre $L^{*}=0$ y $L^{*}=0.9$, la linealidad obtenida es igual a la pedida, y siempre se colocan todos los objetos pedidos. Con $L^{*}=1$ se llega a $L \approx 0.97$.
+
+La Figura~\ref{fig:exp3} muestra las escenas de la semilla 1 para $L^{*} \in \{0, 0.25, 0.5, 0.75, 1\}$:
+\begin{itemize}
+	\item con $L^{*} \le 0.5$, las plataformas se amontonan en la fila de abajo y en la de arriba para alejarse de la curva, y la escena pierde su forma;
+	\item con $L^{*}=0.75$, la escena sigue la curva con variaci\'on;
+	\item con $L^{*}=1$, la escena sigue la curva casi exactamente.
+\end{itemize}
+Esto ocurre porque $L$ solo mide la distancia a la curva: pedir un $L$ bajo es pedir que las plataformas se alejen de ella.
+
+\begin{figure}[!htbp]
+	\centering
+	\includegraphics[width=0.85\textwidth]{figuras/exp3_comparativa.png}
+	\caption{Experimento 3: escenas de inst1 (semilla 1) con $L^{*}$ = 0, 0.25, 0.5, 0.75 y 1, de arriba hacia abajo.}
+	\label{fig:exp3}
+\end{figure}
 
 \section{Conclusiones}
-De acuerdo a la introducci\'on que se hizo, entregar afirmaciones RELEVANTES basadas en los experimentos
-y sus resultados. Incluir: Conclusiones sobre el problema, an\'alisis de los resultados, an\'alisis de la t\'ecnica usada, qu\'e fall\'o, qu\'e se podr\'ia mejorar, trabajo futuro que se podr\'ia realizar.
+\begin{itemize}
+	\item \textbf{Greedy con Hill Climbing no es una buena combinación.} El Greedy ya entrega soluciones muy buenas, así que el Hill Climbing casi no tiene qué mejorar. Cuando el Greedy queda peor, el Hill Climbing puede necesitar decenas de iteraciones y aun así quedar atrapado en un óptimo local. Sería mejor dedicar ese esfuerzo a explorar otras zonas del espacio de búsqueda que a explotar una solución que ya está explotada.
+	\item \textbf{Los reinicios sí aportan.} Aumentar los reinicios concentra los valores de $Z$ y los mejora notablemente. Con solo 2 reinicios ya se eliminan los casos malos, y el costo en tiempo crece de forma lineal. Esto confirma que, en este problema, explorar rinde más que explotar.
+	\item \textbf{Los valores bajos de $L^{*}$ no sirven.} Aunque el algoritmo alcanza cualquier $L^{*}$, con valores menores a 0.5 no genera buenos niveles, porque las plataformas solo se alejan de la curva. Hay que analizar mejor cómo se mide la cercanía a la curva guía para esos valores. Mientras tanto, conviene trabajar en el rango de 0.5 a 1.
+\end{itemize}
 
+\section{Uso LLMs}
+\begin{enumerate}
+	\item Herramienta utilizada: Claude (Modelo Opus 5.5 en formato Alto consumo), Plan Claude Pro de Anthropic.
+	\item Prop\'osito de uso: Citar las referencias en LaTex, encontrar ideas de referencias para indagar, resumir en PDF las referencias, apoyo en fórmulas LaTex para el modelo matemático, apoyo en generar gráficos para el informe. Encontrar algoritmo Hill Climbing e Interpolación Baricéntrica en internet con sus citas. Crear código script para generar múltiples instancias y graficar resultados experimentales.
+	\item Prompts relevantes: Resume en español estos papers de PCG. Expresa el modelo de Sturgeon en notación matemática. Busca papers complementarios. Encuentra una implementación de {Hill Climbing mejor mejora, Interpolación Baricéntrica} en C++ y dame la referencia.
+	\item Nivel de edici\'on: Se copió y pegó las citas en la bibliografía con una revisión posterior para confirmar correctitud de formato APA y reglas de citado de cada referencia. El código se adaptó en base a las referencias utilizadas.
+	\item Validaci\'on: Uso de papers, apuntes de clase, juicio propio.
+\end{enumerate}
 
 %Secci\'on Referencias: Indicando toda la informaci\'on necesaria de acuerdo al tipo de documento revisado. Las referencias deben ser citadas en el documento.
 \bibliographystyle{plain}
 \bibliography{Referencias}
-\end{document} 
+\end{document}
+

@@ -5,46 +5,44 @@ Reallocating 'name_of_file' (item size: 1) to 6 items.
 The style file: plain.bst
 Reallocating 'name_of_file' (item size: 1) to 12 items.
 Database file #1: Referencias.bib
-Warning--I didn't find a database entry for "Prosser93Hybrid"
-You've used 0 entries,
+You've used 8 entries,
             2118 wiz_defined-function locations,
-            499 strings with 4052 characters,
-and the built_in function-call counts, 18 in all, are:
-= -- 0
-> -- 0
-< -- 0
-+ -- 0
-- -- 0
-* -- 2
-:= -- 7
-add.period$ -- 0
-call.type$ -- 0
-change.case$ -- 0
+            568 strings with 6394 characters,
+and the built_in function-call counts, 3664 in all, are:
+= -- 400
+> -- 141
+< -- 6
++ -- 54
+- -- 46
+* -- 234
+:= -- 559
+add.period$ -- 37
+call.type$ -- 8
+change.case$ -- 46
 chr.to.int$ -- 0
-cite$ -- 0
-duplicate$ -- 0
-empty$ -- 1
-format.name$ -- 0
-if$ -- 1
+cite$ -- 8
+duplicate$ -- 156
+empty$ -- 286
+format.name$ -- 46
+if$ -- 824
 int.to.chr$ -- 0
-int.to.str$ -- 0
-missing$ -- 0
-newline$ -- 3
-num.names$ -- 0
-pop$ -- 0
+int.to.str$ -- 8
+missing$ -- 8
+newline$ -- 50
+num.names$ -- 18
+pop$ -- 47
 preamble$ -- 1
-purify$ -- 0
+purify$ -- 38
 quote$ -- 0
-skip$ -- 1
+skip$ -- 123
 stack$ -- 0
-substring$ -- 0
-swap$ -- 0
-text.length$ -- 0
+substring$ -- 260
+swap$ -- 60
+text.length$ -- 6
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 0
+type$ -- 32
 warning$ -- 0
-while$ -- 0
-width$ -- 0
-write$ -- 2
-(There was 1 warning)
+while$ -- 39
+width$ -- 9
+write$ -- 114

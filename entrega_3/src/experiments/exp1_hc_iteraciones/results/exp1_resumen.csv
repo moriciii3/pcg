@@ -1,0 +1,3 @@
+instancia,n_semillas,Z_greedy_prom,Z_greedy_desv,Z_HC_prom,Z_HC_desv,mejora_abs_prom,mejora_abs_desv,mejora_pct_prom,mejora_pct_desv,iteraciones_prom,iteraciones_desv
+inst1,10,0.00519078,0.00270411,3.25979e-06,2.9752e-06,0.00518752,0.00270617,89.2016,31.4347,1.8,0.918937
+inst2,10,0.0227665,0.0216725,0.00163118,0.00320175,0.0211354,0.0195882,96.0944,6.34154,25.7,31.7632
